@@ -1,0 +1,1595 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>采购决策助手 · 网页版</title>
+<style>
+  :root{
+    --bg:#f4f6f8; --card:#ffffff; --line:#e2e6eb; --line2:#eef1f4;
+    --ink:#1c2024; --ink2:#4a5056; --muted:#868e96;
+    --accent:#2563eb; --accent-bg:#eff4ff;
+    --ok:#15803d; --ok-bg:#effaf1;
+    --warn:#b45309; --warn-bg:#fff8eb;
+    --bad:#b91c1c; --bad-bg:#fef2f2;
+    --radius:10px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font:14.5px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei","PingFang SC",sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:22px 16px 72px}
+
+  /* ── 顶栏 ── */
+  header{display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+  .logo{width:38px;height:38px;border-radius:9px;background:var(--accent);color:#fff;
+        display:flex;align-items:center;justify-content:center;font-weight:700;font-size:17px;flex:none}
+  h1{margin:0;font-size:19px;font-weight:650;letter-spacing:.2px}
+  .sub{color:var(--muted);font-size:13px;margin-top:2px}
+  .badge{display:inline-block;background:var(--ok-bg);color:var(--ok);border:1px solid #cdeccf;
+         border-radius:999px;padding:1px 9px;font-size:12px;margin-right:6px}
+
+  /* ── 模式切换 ── */
+  .tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;margin-bottom:16px;
+        border-bottom:1px solid var(--line);-webkit-overflow-scrolling:touch}
+  .tab{flex:none;background:none;border:none;border-bottom:2px solid transparent;
+       padding:9px 13px;font-size:14.5px;color:var(--ink2);cursor:pointer;font-family:inherit;
+       border-radius:6px 6px 0 0;white-space:nowrap}
+  .tab:hover{background:#eaeef3}
+  .tab.on{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
+
+  /* ── 卡片 ── */
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+        padding:16px 18px;margin-bottom:14px}
+  .card > h2{margin:0 0 4px;font-size:15.5px;font-weight:640}
+  .card > .hint{color:var(--muted);font-size:13px;margin-bottom:14px}
+
+  /* ── 表单 ── */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+  .f{display:flex;flex-direction:column;gap:5px;min-width:0}
+  .f > label{font-size:12.5px;color:var(--ink2);font-weight:550;display:flex;gap:5px;align-items:baseline}
+  .f > label .u{color:var(--muted);font-weight:400;font-size:11.5px}
+  .f > label .req{color:var(--bad)}
+  input,select{width:100%;padding:7px 9px;border:1px solid var(--line);border-radius:7px;
+               font:inherit;font-size:14px;background:#fff;color:var(--ink);min-width:0}
+  input:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-bg)}
+  input[type=checkbox]{width:auto;flex:none;margin:0;accent-color:var(--accent)}
+  .chk{display:flex;align-items:center;gap:7px;padding-top:22px;font-size:13.5px;color:var(--ink2)}
+  .subgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:11px;
+           margin-top:11px;padding-top:11px;border-top:1px dashed var(--line)}
+
+  /* ── 行卡片 ── */
+  .rowcard{border:1px solid var(--line);border-radius:9px;padding:12px 13px;margin-bottom:11px;background:#fcfdfe}
+  .rowhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+  .rowhead b{font-size:13.5px;font-weight:640}
+  .xbtn{background:none;border:1px solid var(--line);border-radius:6px;color:var(--muted);
+        font-size:12px;padding:2px 9px;cursor:pointer;font-family:inherit}
+  .xbtn:hover{color:var(--bad);border-color:#f3c9c9;background:var(--bad-bg)}
+
+  .btn{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:9px 20px;
+       font:inherit;font-size:14.5px;font-weight:600;cursor:pointer}
+  .btn:hover{background:#1d55cc}
+  .btn.ghost{background:#fff;color:var(--ink2);border:1px solid var(--line);font-weight:500}
+  .btn.ghost:hover{background:#f2f5f8;color:var(--ink)}
+  .btn.sm{padding:6px 13px;font-size:13px}
+  .row{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+  .spacer{flex:1}
+
+  /* ── 结果 ── */
+  .kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:15px}
+  .kpi{background:#f8fafc;border:1px solid var(--line2);border-radius:9px;padding:10px 12px}
+  .kpi .k{font-size:12px;color:var(--muted);margin-bottom:3px}
+  .kpi .v{font-size:19px;font-weight:660;letter-spacing:-.2px;word-break:break-all}
+  .kpi .v small{font-size:12px;font-weight:400;color:var(--muted);margin-left:3px}
+  .kpi.hl{background:var(--accent-bg);border-color:#d3e0fd}
+  .kpi.hl .v{color:var(--accent)}
+  .kpi.ok .v{color:var(--ok)} .kpi.bad .v{color:var(--bad)}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px;margin-bottom:14px}
+  th,td{text-align:left;padding:8px 9px;border-bottom:1px solid var(--line2);vertical-align:top}
+  th{background:#f8fafc;color:var(--ink2);font-weight:600;font-size:12.5px;white-space:nowrap}
+  tbody tr:hover{background:#fbfcfe}
+  td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+  .scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+
+  .msg{border-radius:8px;padding:9px 12px;font-size:13.5px;margin-bottom:8px;border:1px solid}
+  .msg.w{background:var(--warn-bg);border-color:#f5e0bb;color:var(--warn)}
+  .msg.a{background:var(--bad-bg);border-color:#f6d3d3;color:var(--bad)}
+  .msg.i{background:var(--accent-bg);border-color:#d3e0fd;color:var(--accent)}
+  .msg b{font-weight:650}
+
+  details{margin-top:12px}
+  details > summary{cursor:pointer;font-size:13.5px;color:var(--ink2);font-weight:550;
+                    list-style:none;padding:7px 0;user-select:none}
+  details > summary::-webkit-details-marker{display:none}
+  details > summary:before{content:"▸ ";color:var(--muted)}
+  details[open] > summary:before{content:"▾ "}
+  pre{background:#1e2228;color:#d7dce3;padding:13px 15px;border-radius:8px;
+      overflow:auto;font-size:12.5px;line-height:1.6;max-height:440px;
+      font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+  .err{background:var(--bad-bg);border:1px solid #f6d3d3;color:var(--bad);
+       border-radius:8px;padding:12px 14px;font-size:13.5px}
+  .err b{display:block;margin-bottom:4px}
+
+  .tag{display:inline-block;border-radius:5px;padding:1px 7px;font-size:12px;font-weight:600}
+  .tag.p{background:var(--ok-bg);color:var(--ok)}
+  .tag.f{background:var(--bad-bg);color:var(--bad)}
+  .tag.q{background:#f1f3f5;color:var(--muted)}
+  .tag.r1{background:var(--accent-bg);color:var(--accent)}
+
+  footer{margin-top:26px;padding-top:16px;border-top:1px solid var(--line);
+         color:var(--muted);font-size:12.5px;line-height:1.8}
+  .cta{margin-top:26px;background:var(--card);border:1px solid var(--line);
+       border-radius:var(--radius);padding:18px;display:flex;gap:18px;align-items:center}
+  .cta .qr{flex:none;width:104px;height:104px;border:1px dashed var(--line);border-radius:8px;
+       display:flex;align-items:center;justify-content:center;text-align:center;
+       color:var(--muted);font-size:11.5px;line-height:1.5;background:#fafbfc}
+  .cta h3{margin:0 0 6px;font-size:15.5px;color:var(--ink)}
+  .cta p{margin:0;font-size:13px;color:var(--ink2);line-height:1.75}
+  .cta .dy{display:inline-block;margin-top:8px;background:var(--accent-bg);color:var(--accent);
+       font-weight:700;padding:4px 10px;border-radius:6px;font-size:13.5px}
+  .empty{color:var(--muted);font-size:13.5px;padding:14px 0;text-align:center}
+  @media(max-width:600px){
+    .wrap{padding:16px 12px 60px}
+    h1{font-size:17px}
+    .card{padding:14px 14px}
+    .kpi .v{font-size:17px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="logo">采</div>
+  <div>
+    <h1>采购决策助手 · 网页版</h1>
+    <div class="sub">
+      <span class="badge">本地计算</span>
+      <span class="badge">不联网 · 不上传数据</span>
+      比价 · 价格分析 · 供应商评分 · 库存补货 · 进口到岸成本
+    </div>
+  </div>
+</header>
+
+<nav class="tabs" id="tabs"></nav>
+
+<main id="app"></main>
+
+<section class="cta">
+  <!-- 换成你的抖音二维码/头像：把下面这个 div 整段删掉，替换为
+       <img src="二维码.png" alt="抖音：采购老刘" style="width:104px;height:104px;border-radius:8px"> -->
+  <div class="qr">二维码 / 头像位<br>（贴你的抖音码）</div>
+  <div>
+    <h3>这个工具帮你省到钱了吗？</h3>
+    <p>我做了一套采购降本与供应商管理的实战方法，从比价、价格趋势，到库存补货、进口到岸成本，
+      都在视频里讲透了。更多采购实战工具与案例，关注抖音：</p>
+    <span class="dy">采购老刘</span>
+  </div>
+</section>
+
+<footer>
+  <div>本页为纯前端计算器：所有运算在你的浏览器内完成，<b>不连接任何服务器，不上传任何数据</b>。</div>
+  <div>税费、关税、完税价格为按公开口径的情景测算，实际以海关认定与企业税务处理为准；分析结论请结合业务判断使用。</div>
+</footer>
+
+</div>
+
+<script>
+/*__CORE_START__*/
+/* =========================================================================
+ * 计算内核（由 Python 版 procurement_calc.py 等价移植，纯函数、无依赖）
+ * ========================================================================= */
+
+const isNone = v => v === null || v === undefined;
+
+function num(value, field, opt) {
+  const o = opt || {};
+  if (isNone(value)) {
+    if (o.required) throw new Error("缺少必填字段: " + field);
+    return null;
+  }
+  if (typeof value !== "number" || !Number.isFinite(value)) {
+    throw new Error("字段 " + field + " 必须是数字，收到: " + JSON.stringify(value));
+  }
+  if (o.allowZero === false && value === 0) throw new Error("字段 " + field + " 不允许为 0");
+  return value;
+}
+
+function txt(value, field, opt) {
+  const o = opt || {};
+  if (isNone(value)) {
+    if (o.required) throw new Error("缺少必填字段: " + field);
+    return null;
+  }
+  if (typeof value !== "string" || !value.trim()) {
+    throw new Error("字段 " + field + " 必须是非空字符串，收到: " + JSON.stringify(value));
+  }
+  return value.trim();
+}
+
+function obj(value, field) {
+  if (value === null || typeof value !== "object" || Array.isArray(value)) {
+    throw new Error("字段 " + field + " 必须是对象");
+  }
+  return value;
+}
+
+function arr(value, field) {
+  if (!Array.isArray(value)) throw new Error("字段 " + field + " 必须是数组");
+  return value;
+}
+
+/* 对齐 Python 的 round(x, 4)（half-even） */
+function pyRound(x, nd) {
+  if (!Number.isFinite(x)) return x;
+  const m = Math.pow(10, nd);
+  const y = x * m;
+  const f = Math.floor(y);
+  const d = y - f;
+  let r;
+  if (Math.abs(d - 0.5) < 1e-9) r = (f % 2 === 0) ? f : f + 1;
+  else r = Math.round(y);
+  return r / m;
+}
+const r4 = v => pyRound(v, 4);
+
+/* Python 风格 `{v:g}` 与列表 repr，用于复刻提示文案 */
+function gfmt(v) { return String(v); }
+function pyList(items) {
+  return "[" + items.map(s => "'" + s + "'").join(", ") + "]";
+}
+
+function mean(values) {
+  let s = 0;
+  for (const v of values) s += v;
+  return s / values.length;
+}
+function pstdev(values) {
+  const mu = mean(values);
+  let ss = 0;
+  for (const v of values) ss += (v - mu) * (v - mu);
+  return Math.sqrt(ss / values.length);
+}
+
+/* 归一到不含税净单价；不可抵扣时税额进成本。返回 [净单价, 口径说明] */
+function netUnit(quoted, priceTax, taxRate, deductible) {
+  const pt = String(priceTax || "excluded").toLowerCase();
+  if (pt !== "included" && pt !== "excluded") {
+    throw new Error("price_tax 只支持 included(含税)/excluded(未税)，收到 " + JSON.stringify(priceTax));
+  }
+  const rate = isNone(taxRate) ? 0.0 : taxRate;
+  if (pt === "included") {
+    if (deductible && rate > 0) {
+      return [quoted / (1 + rate), "含税价 " + gfmt(quoted) + " ÷ (1+" + gfmt(rate) + ")，进项可抵扣，按净额"];
+    }
+    if (rate > 0) {
+      return [quoted, "含税价 " + gfmt(quoted) + "，进项不可抵扣，税额计入成本"];
+    }
+    return [quoted, "含税口径报价但税率为 0，按原价"];
+  }
+  if (taxRate && !deductible) {
+    return [quoted * (1 + rate), "未税价 " + gfmt(quoted) + "，进项不可抵扣，加计 " + gfmt(rate) + " 税额进成本"];
+  }
+  return [quoted, "未税可抵扣口径，直接使用报价"];
+}
+
+/* ------------------------------------------------------------------ quote */
+function modeQuote(payload) {
+  const rawOffers = arr(payload.offers, "offers");
+  if (!rawOffers.length) throw new Error("offers 至少需要 1 条报价");
+
+  const annualDemand = num(payload.annual_demand, "annual_demand");
+  const capitalCost = num(payload.capital_cost_annual, "capital_cost_annual") || 0.0;
+  const baseline = payload.baseline;
+  const warnings = [];
+
+  const results = [];
+  const currencies = new Set(), taxBases = new Set(), incoterms = new Set();
+  const paymentDaysAll = [];
+
+  for (let i = 0; i < rawOffers.length; i++) {
+    const row = obj(rawOffers[i], "offers[" + i + "]");
+    const prefix = "offers[" + i + "]";
+    const supplier = txt(row.supplier, prefix + ".supplier", { required: true });
+    const qty = num(row.qty, prefix + ".qty", { required: true, allowZero: false });
+    if (qty === null || qty <= 0) throw new Error(prefix + ".qty 必须为正数");
+    const quotedPrice = num(row.quoted_price, prefix + ".quoted_price", { required: true });
+    const taxRate = num(row.tax_rate, prefix + ".tax_rate") || 0.0;
+    const deductible = row.deductible === undefined ? true : !!row.deductible;
+    let currency = txt(row.currency, prefix + ".currency") || payload.currency_default || "CNY";
+    let fxRate = num(row.fx_rate, prefix + ".fx_rate");
+    if (fxRate === null) {
+      if (currency !== "CNY") {
+        warnings.push(supplier + ": 外币 " + currency + " 未提供 fx_rate，已按 1 计算，请补真实汇率后重算");
+      }
+      fxRate = 1.0;
+    }
+    if (currency !== "CNY" && Math.abs(fxRate - 1.0) < 1e-9) {
+      warnings.push(supplier + ": 正在用 fx_rate=1 处理外币报价，结果无意义，务必补汇率");
+    }
+
+    const priceTax = txt(row.price_tax, prefix + ".price_tax") || "excluded";
+    const nu = netUnit(quotedPrice, priceTax, taxRate, deductible);
+    const netLocal = nu[0], basisNote = nu[1];
+    const netCny = netLocal * fxRate;
+
+    const freight = (num(row.freight, prefix + ".freight") || 0.0) * fxRate;
+    const origin = (num(row.origin_charges, prefix + ".origin_charges") || 0.0) * fxRate;
+    const destination = num(row.destination_charges, prefix + ".destination_charges") || 0.0;
+    const oneTime = (num(row.one_time, prefix + ".one_time") || 0.0) * fxRate;
+    const annualService = (num(row.annual_service, prefix + ".annual_service") || 0.0) * fxRate;
+    const rebate = (num(row.rebate, prefix + ".rebate") || 0.0) * fxRate;
+    const paymentDays = num(row.payment_days, prefix + ".payment_days") || 0.0;
+    const moq = num(row.moq, prefix + ".moq");
+    const lead = num(row.lead_time_days, prefix + ".lead_time_days");
+    const incoterm = txt(row.incoterm, prefix + ".incoterm");
+
+    const batchLogistics = freight + origin + destination;
+    const batchGoods = qty * netCny;
+    const batchTotal = batchGoods + batchLogistics;
+    const unitAcq = (batchTotal + oneTime + annualService - rebate) / qty;
+
+    let annualTco = null, batches = null;
+    if (annualDemand) {
+      if (annualDemand <= 0) throw new Error("annual_demand 必须为正数");
+      batches = annualDemand / qty;
+      annualTco = annualDemand * netCny + batches * batchLogistics + annualService + oneTime - rebate;
+    }
+
+    let moqNote = null;
+    if (moq && qty < moq) {
+      moqNote = "报价数量 " + gfmt(qty) + " 低于 MOQ " + gfmt(moq) + "，该价格可能不成立";
+      warnings.push(supplier + ": " + moqNote);
+    }
+
+    currencies.add(currency);
+    taxBases.add(priceTax + "/" + (deductible ? "可抵" : "不可抵"));
+    if (incoterm) incoterms.add(incoterm);
+    paymentDaysAll.push(paymentDays);
+
+    results.push({
+      supplier: supplier, currency: currency, fx_rate: r4(fxRate),
+      net_unit_cny: r4(netCny), basis_note: basisNote, qty: qty,
+      batch_goods_cny: r4(batchGoods), batch_logistics_cny: r4(batchLogistics),
+      one_time_cny: r4(oneTime), annual_service_cny: r4(annualService),
+      rebate_cny: r4(rebate), batch_total_cny: r4(batchTotal),
+      unit_acquisition_cny: r4(unitAcq),
+      annual_tco_cny: annualTco !== null ? r4(annualTco) : null,
+      batches_per_year: batches !== null ? r4(batches) : null,
+      payment_days: paymentDays, moq: moq, lead_time_days: lead, incoterm: incoterm,
+      notes: moqNote ? [moqNote] : []
+    });
+  }
+
+  if (annualDemand && paymentDaysAll.length && capitalCost > 0) {
+    for (const item of results) {
+      const annualGoods = annualDemand * item.net_unit_cny;
+      item.payment_capital_cost_cny = r4(annualGoods * item.payment_days / 365.0 * capitalCost);
+    }
+  }
+
+  const order = results.slice().sort((a, b) =>
+    annualDemand ? (a.annual_tco_cny - b.annual_tco_cny) : (a.unit_acquisition_cny - b.unit_acquisition_cny));
+  order.forEach((item, idx) => { item.rank = idx + 1; });
+
+  let savings = null;
+  if (baseline && typeof baseline === "object" && !Array.isArray(baseline)) {
+    const baseNet = num(baseline.net_unit, "baseline.net_unit");
+    const baseAcq = num(baseline.unit_acquisition, "baseline.unit_acquisition");
+    const baseValue = baseAcq !== null ? baseAcq : baseNet;
+    if (baseValue !== null && baseValue > 0) {
+      const best = order[0];
+      const compareUnit = best.unit_acquisition_cny;
+      savings = {
+        baseline_supplier: txt(baseline.supplier, "baseline.supplier") || "基线",
+        baseline_unit_cny: r4(baseValue),
+        per_unit_saving_cny: r4(baseValue - compareUnit),
+        annual_saving_cny: annualDemand ? r4((baseValue - compareUnit) * annualDemand) : null,
+        saving_rate: r4((baseValue - compareUnit) / baseValue),
+        against_supplier: best.supplier
+      };
+    }
+  }
+
+  if (currencies.size > 1) {
+    warnings.push("报价存在多种币种 " + pyList([...currencies].sort()) + "，已按各自汇率折人民币，请核对汇率与日期");
+  }
+  if (taxBases.size > 1) {
+    warnings.push("报价含税/抵扣口径不一致 " + pyList([...taxBases].sort()) + "，已按可抵扣净额归一，请确认发票类型");
+  }
+  if (incoterms.size > 1) {
+    warnings.push("贸易术语不一致 " + pyList([...incoterms].sort()) + "，费用边界不同，比价结论需谨慎");
+  }
+  if (!annualDemand) {
+    warnings.push("未提供 annual_demand，仅输出本次批次口径成本，未计算年度 TCO 与年度节降");
+  }
+
+  return {
+    mode: "quote", fx_date: payload.fx_date,
+    comparison_basis: "人民币 / 归一化净单价 / 报价数量口径",
+    ranking_metric: annualDemand ? "annual_tco_cny" : "unit_acquisition_cny",
+    offers: results, savings_vs_baseline: savings, warnings: warnings
+  };
+}
+
+/* ------------------------------------------------------------------ price */
+function modePrice(payload) {
+  const rowsRaw = arr(payload.orders, "orders");
+  if (!rowsRaw.length) throw new Error("orders 至少需要 1 条订单行");
+  const baselinePrice = num(payload.baseline_price, "baseline_price");
+  const warnings = [];
+
+  const records = [];
+  for (let i = 0; i < rowsRaw.length; i++) {
+    const row = obj(rowsRaw[i], "orders[" + i + "]");
+    const status = String(txt(row.status, "orders[" + i + "].status") || "normal").toLowerCase();
+    if (status === "cancelled" || status === "canceled" || status === "取消") {
+      warnings.push("第 " + (i + 1) + " 行为取消行，已剔除");
+      continue;
+    }
+    const qty = num(row.qty, "orders[" + i + "].qty", { required: true, allowZero: false });
+    const price = num(row.unit_price, "orders[" + i + "].unit_price", { required: true });
+    const taxRate = num(row.tax_rate, "orders[" + i + "].tax_rate") || 0.0;
+    const deductible = row.deductible === undefined ? true : !!row.deductible;
+    const priceTax = txt(row.price_tax, "orders[" + i + "].price_tax") || "excluded";
+    const net = netUnit(price, priceTax, taxRate, deductible)[0];
+    let period = txt(row.period, "orders[" + i + "].period");
+    if (!period) {
+      const d = txt(row.date, "orders[" + i + "].date", { required: true });
+      period = d.slice(0, 7);
+    }
+    records.push({
+      period: period,
+      supplier: txt(row.supplier, "orders[" + i + "].supplier") || "未标注供应商",
+      qty: qty, net_unit: net, spend: qty * net
+    });
+  }
+
+  if (!records.length) throw new Error("剔除取消行后没有可分析的订单");
+
+  let totalQty = 0, totalSpend = 0;
+  for (const r of records) { totalQty += r.qty; totalSpend += r.spend; }
+  const wap = totalSpend / totalQty;
+
+  const periods = new Map();
+  for (const r of records) {
+    if (!periods.has(r.period)) periods.set(r.period, { qty: 0, spend: 0 });
+    const p = periods.get(r.period);
+    p.qty += r.qty; p.spend += r.spend;
+  }
+  const periodRows = [];
+  let prevWap = null;
+  for (const period of [...periods.keys()].sort()) {
+    const p = periods.get(period);
+    const pWap = p.spend / p.qty;
+    const mom = prevWap === null ? null : (pWap - prevWap) / prevWap;
+    periodRows.push({ period: period, qty: r4(p.qty), wap: r4(pWap), mom: mom === null ? null : r4(mom) });
+    prevWap = pWap;
+  }
+
+  const firstWap = periodRows[0].wap, lastWap = periodRows[periodRows.length - 1].wap;
+  const periodCount = periodRows.length;
+  const changeFirstLast = firstWap ? (lastWap - firstWap) / firstWap : null;
+  const wapSeries = periodRows.map(p => p.wap);
+  const cv = wapSeries.length > 1 ? pstdev(wapSeries) / mean(wapSeries) : 0.0;
+
+  let ppv = null;
+  if (baselinePrice !== null) {
+    ppv = 0;
+    for (const r of records) ppv += (r.net_unit - baselinePrice) * r.qty;
+  }
+
+  const supplierSpend = new Map();
+  for (const r of records) {
+    supplierSpend.set(r.supplier, (supplierSpend.get(r.supplier) || 0) + r.spend);
+  }
+  const mix = [...supplierSpend.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .map(kv => ({ supplier: kv[0], spend: r4(kv[1]), share: r4(kv[1] / totalSpend) }));
+
+  if (periodCount < 3) {
+    warnings.push("仅有 " + periodCount + " 个期间数据，不足以判断趋势，只报事实不下趋势结论");
+  }
+  if (baselinePrice === null) warnings.push("未提供 baseline_price，未计算 PPV");
+
+  return {
+    mode: "price", total_qty: r4(totalQty), total_spend_cny: r4(totalSpend),
+    wap_overall: r4(wap), periods: periodRows,
+    change_first_to_last: changeFirstLast !== null ? r4(changeFirstLast) : null,
+    cv_by_period: r4(cv),
+    ppv_vs_baseline_cny: ppv !== null ? r4(ppv) : null,
+    supplier_mix: mix, warnings: warnings
+  };
+}
+
+/* ------------------------------------------------------------------ score */
+function modeScore(payload) {
+  const candidatesRaw = arr(payload.candidates, "candidates");
+  const weightsRaw = arr(payload.weights, "weights");
+  if (!candidatesRaw.length) throw new Error("candidates 至少需要 1 个供应商");
+  if (!weightsRaw.length) throw new Error("weights 至少需要 1 个评分指标");
+
+  const warnings = [];
+  let weightSum = 0;
+  const weightSpecs = [];
+  for (let i = 0; i < weightsRaw.length; i++) {
+    const w = obj(weightsRaw[i], "weights[" + i + "]");
+    const key = txt(w.key, "weights[" + i + "].key", { required: true });
+    const label = txt(w.label, "weights[" + i + "].label") || key;
+    const weight = num(w.weight, "weights[" + i + "].weight", { required: true });
+    const direction = String(txt(w.direction, "weights[" + i + "].direction") || "higher").toLowerCase();
+    if (direction !== "higher" && direction !== "lower") {
+      throw new Error("weights[" + i + "].direction 只支持 higher/lower");
+    }
+    weightSum += weight;
+    weightSpecs.push({ key: key, label: label, weight: weight, direction: direction });
+  }
+  if (Math.abs(weightSum - 1.0) > 1e-6) {
+    warnings.push("权重合计为 " + gfmt(weightSum) + "，不等于 1，已按有效权重重新归一，请核对");
+  }
+
+  const gateRulesRaw = arr(payload.gate_rules === undefined ? [] : payload.gate_rules, "gate_rules");
+  const gateSpecs = [];
+  for (let i = 0; i < gateRulesRaw.length; i++) {
+    const g = obj(gateRulesRaw[i], "gate_rules[" + i + "]");
+    gateSpecs.push({
+      key: txt(g.key, "gate_rules[" + i + "].key", { required: true }),
+      label: txt(g.label, "gate_rules[" + i + "].label") || g.key
+    });
+  }
+
+  const candidates = [];
+  for (let i = 0; i < candidatesRaw.length; i++) {
+    const c = obj(candidatesRaw[i], "candidates[" + i + "]");
+    const supplier = txt(c.supplier, "candidates[" + i + "].supplier", { required: true });
+    const gatesIn = c.gates || {};
+    const gateResults = [];
+    let rejected = false, pending = false;
+    for (const spec of gateSpecs) {
+      const v = gatesIn[spec.key];
+      let status;
+      if (v === true) status = "pass";
+      else if (v === false) { status = "fail"; rejected = true; }
+      else { status = "pending"; pending = true; }
+      gateResults.push({ key: spec.key, label: spec.label, status: status });
+    }
+    candidates.push({
+      supplier: supplier, gates: gateResults, metrics: c.metrics || {},
+      rejected: rejected, pending: pending
+    });
+  }
+
+  const pool = candidates.filter(c => !c.rejected);
+  const ranges = {};
+  for (const spec of weightSpecs) {
+    const values = [];
+    for (const c of pool) {
+      const v = c.metrics[spec.key];
+      if (typeof v === "number" && Number.isFinite(v)) values.push(v);
+    }
+    if (values.length) ranges[spec.key] = [Math.min(...values), Math.max(...values)];
+  }
+
+  const scored = [];
+  for (const c of candidates) {
+    let weightedSum = 0, activeWeight = 0;
+    const metricRows = [];
+    for (const spec of weightSpecs) {
+      const v = c.metrics[spec.key];
+      if (!(typeof v === "number" && Number.isFinite(v))) {
+        metricRows.push({ key: spec.key, label: spec.label, value: (v === undefined ? null : v),
+                          status: "missing", normalized: null, weight_used: 0.0 });
+        warnings.push(c.supplier + ": 指标「" + spec.label + "」缺失，该指标不计分（不当零分）");
+        continue;
+      }
+      const x = v;
+      if (!ranges[spec.key]) {
+        throw new Error(c.supplier + ": 指标「" + spec.label + "」在所有候选上都缺失，无法归一化");
+      }
+      const lo = ranges[spec.key][0], hi = ranges[spec.key][1];
+      let norm;
+      if (hi === lo) {
+        norm = 0.5;
+        warnings.push("指标「" + spec.label + "」各候选取值相同 (" + gfmt(x) + ")，全部给中性分 0.5");
+      } else {
+        norm = spec.direction === "higher" ? (x - lo) / (hi - lo) : (hi - x) / (hi - lo);
+      }
+      weightedSum += spec.weight * norm;
+      activeWeight += spec.weight;
+      metricRows.push({ key: spec.key, label: spec.label, value: r4(x), status: "used",
+                        normalized: r4(norm), weight_used: spec.weight });
+    }
+    let final = null;
+    if (!c.rejected) {
+      final = activeWeight > 0 ? weightedSum / activeWeight : null;
+      if (activeWeight < weightSum - 1e-9) {
+        warnings.push(c.supplier + ": 仅 " + gfmt(activeWeight) + "/" + gfmt(weightSum) + " 权重有效，评分代表性不足");
+      }
+    }
+    scored.push(Object.assign({}, c, {
+      metric_details: metricRows,
+      final_score: final !== null ? r4(final) : null
+    }));
+  }
+
+  scored.sort((a, b) => {
+    const ra = a.rejected ? 1 : 0, rb = b.rejected ? 1 : 0;
+    if (ra !== rb) return ra - rb;
+    const fa = a.final_score || -1, fb = b.final_score || -1;
+    return fb - fa;
+  });
+
+  let rank = 0;
+  for (const c of scored) {
+    if (c.rejected) {
+      c.rank = null;
+      c.result = "门槛未通过，淘汰";
+    } else {
+      rank += 1;
+      c.rank = rank;
+      c.result = c.pending ? "待补证后复评（门槛待核实）" : "通过门槛，进入排名";
+    }
+  }
+
+  if (pool.length <= 2 && pool.length) {
+    warnings.push("有效候选仅 2 家，min-max 归一容易失真，建议改用阈值锚定法人工复核");
+  }
+
+  return { mode: "score", weight_sum: r4(weightSum), candidates: scored, warnings: warnings };
+}
+
+/* -------------------------------------------------------------- inventory */
+function modeInventory(payload) {
+  const need = field => num(payload[field], field, { required: true });
+
+  const onHand = need("on_hand");
+  const blocked = num(payload.blocked, "blocked") || 0.0;
+  const allocated = num(payload.allocated, "allocated") || 0.0;
+  const inTransit = num(payload.in_transit, "in_transit") || 0.0;
+  const backorders = num(payload.backorders, "backorders") || 0.0;
+  const committed = num(payload.committed, "committed") || 0.0;
+  const dMean = need("avg_daily_demand");
+  const dStd = num(payload.demand_std_daily, "demand_std_daily") || 0.0;
+  const ltMean = need("lead_time_days");
+  const ltStd = num(payload.lead_time_std_days, "lead_time_std_days") || 0.0;
+  const z = num(payload.service_z, "service_z") || 1.65;
+  const review = num(payload.review_period_days, "review_period_days") || 0.0;
+  const moq = num(payload.moq, "moq");
+  const multiple = num(payload.order_multiple, "order_multiple");
+
+  if (dMean <= 0 || ltMean < 0) {
+    throw new Error("avg_daily_demand 必须为正，lead_time_days 不可为负");
+  }
+  const checks = [["on_hand", onHand], ["blocked", blocked], ["allocated", allocated],
+                  ["in_transit", inTransit], ["backorders", backorders], ["committed", committed]];
+  for (const c of checks) {
+    if (c[1] < 0) throw new Error(c[0] + " 不可为负");
+  }
+
+  const warnings = [];
+  const usable = onHand - blocked - allocated;
+  const position = usable + inTransit - backorders - committed;
+  const variance = ltMean * dStd * dStd + dMean * dMean * ltStd * ltStd;
+  const ss = z * Math.sqrt(Math.max(variance, 0));
+  const rop = dMean * (ltMean + review) + ss;
+  const target = rop;
+  const rawOrder = target - position;
+
+  let constrained = 0.0;
+  if (rawOrder > 0) {
+    constrained = rawOrder;
+    if (moq && constrained < moq) constrained = moq;
+    if (multiple && multiple > 0) constrained = Math.ceil(constrained / multiple) * multiple;
+  }
+
+  const daysSupply = dMean ? position / dMean : null;
+  const ltDemand = dMean * ltMean;
+
+  if (usable < 0) warnings.push("可用库存为负 (" + r4(usable) + ")，冻结/已分配大于账面，请核对库存口径");
+  if (position < rop) warnings.push("库存头寸低于再订货点 ROP，应触发补货");
+  if (daysSupply !== null && daysSupply < ltMean) {
+    warnings.push("可供天数 " + r4(daysSupply) + " 低于提前期 " + gfmt(ltMean) + " 天，存在断供缺口，考虑加急/拆单");
+  }
+  if (dStd === 0 && ltStd === 0) {
+    warnings.push("未提供需求/提前期波动，安全库存为 0，仅适用于绝对稳定的供应环境");
+  }
+  if (constrained !== rawOrder && rawOrder > 0) {
+    warnings.push("建议量受 MOQ/订货倍数约束被放大，请评估多采购部分的持有成本");
+  }
+
+  const alerts = warnings.filter(w =>
+    w.startsWith("库存头寸") || w.startsWith("可供天数") || w.startsWith("可用库存"));
+
+  return {
+    mode: "inventory", usable_stock: r4(usable), inventory_position: r4(position),
+    lead_time_demand: r4(ltDemand), safety_stock: r4(ss), service_z: z, rop: r4(rop),
+    target_position: r4(target), order_qty_raw: r4(Math.max(rawOrder, 0)),
+    order_qty_constrained: r4(constrained),
+    days_of_supply: daysSupply !== null ? r4(daysSupply) : null,
+    alerts: alerts, warnings: warnings
+  };
+}
+
+/* ----------------------------------------------------------------- landed */
+function modeLanded(payload) {
+  const term = String(txt(payload.trade_term, "trade_term") || "FOB").toUpperCase();
+  const TERMS = ["EXW", "FOB", "CFR", "CIF", "DAP", "DPU", "DDP"];
+  if (TERMS.indexOf(term) < 0) {
+    throw new Error("不支持的贸易术语 " + term + "（支持 EXW/FOB/CFR/CIF/DAP/DPU/DDP）");
+  }
+  const fx = num(payload.fx_rate, "fx_rate", { required: true });
+  if (fx === null || fx <= 0) throw new Error("fx_rate 必须为正数");
+  const qty = num(payload.quantity, "quantity", { required: true, allowZero: false });
+  const dutyRate = num(payload.duty_rate, "duty_rate", { required: true });
+  const vatRate = num(payload.vat_rate, "vat_rate", { required: true });
+  const ctRate = num(payload.consumption_tax_rate, "consumption_tax_rate") || 0.0;
+  const deductible = payload.vat_deductible === undefined ? true : !!payload.vat_deductible;
+
+  const f = (field, foreign) => {
+    const v = num(payload[field], field) || 0.0;
+    return (foreign === false) ? v : v * fx;
+  };
+
+  const warnings = [];
+  const goods = f("goods_value");
+  const freight = f("freight");
+  const insurance = f("insurance");
+  const origin = f("origin_charges");
+  const dest = f("destination_charges", false);
+  const brokerage = f("brokerage", false);
+  const other = f("other_taxes", false);
+
+  const cvParts = { "货值": goods };
+  if (term === "EXW") {
+    cvParts["出口地费用"] = origin; cvParts["运费"] = freight; cvParts["保险"] = insurance;
+  } else if (term === "FOB") {
+    cvParts["运费"] = freight; cvParts["保险"] = insurance;
+  } else if (term === "CFR") {
+    cvParts["保险"] = insurance;
+  }
+  let customsValue = 0;
+  for (const k in cvParts) customsValue += cvParts[k];
+
+  if (insurance === 0 && (term === "EXW" || term === "FOB" || term === "CFR")) {
+    warnings.push("未提供保险费：海关审价时可能按规定的最低保险费率估算，本结果为情景值");
+  }
+  if (freight === 0 && (term === "EXW" || term === "FOB")) {
+    warnings.push("未提供运费：海关审价时可能按同期同线路运费水平估算，本结果为情景值");
+  }
+
+  const duty = customsValue * dutyRate;
+  let consumptionTax = 0.0;
+  if (ctRate > 0) consumptionTax = (customsValue + duty) / (1 - ctRate) * ctRate;
+  const vat = (customsValue + duty + consumptionTax) * vatRate;
+  const vatInCost = deductible ? 0.0 : vat;
+
+  let landed = goods
+    + freight * ((term === "EXW" || term === "FOB") ? 1 : 0)
+    + insurance * ((term === "EXW" || term === "FOB" || term === "CFR") ? 1 : 0)
+    + origin * (term === "EXW" ? 1 : 0)
+    + dest + brokerage + duty + consumptionTax + vatInCost + other;
+
+  if (term === "CIF" || term === "DAP" || term === "DPU" || term === "DDP") {
+    landed += freight + insurance + origin;
+    if (freight || insurance || origin) {
+      warnings.push(term + " 术语报价通常已含运保及出口段费用，请确认没有与货值重复计算");
+    }
+  }
+
+  const breakdown = {
+    "货值": r4(goods), "国际运费": r4(freight), "保险费": r4(insurance),
+    "出口地费用": r4(origin), "进口地港杂": r4(dest), "报关费": r4(brokerage),
+    "关税": r4(duty), "消费税": r4(consumptionTax),
+    "增值税(计入成本部分)": r4(vatInCost), "其他费用": r4(other)
+  };
+
+  const effBurden = customsValue > 0 ? (duty + consumptionTax + vatInCost) / customsValue : null;
+
+  warnings.push("关税/增值税/消费税与完税价格为按公开口径的情景测算，实际以海关认定与企业税务处理为准");
+
+  return {
+    mode: "landed", trade_term: term, fx_rate: fx, fx_date: payload.fx_date,
+    customs_value_cny: r4(customsValue),
+    customs_value_components: Object.keys(cvParts).reduce((o, k) => (o[k] = r4(cvParts[k]), o), {}),
+    duty_cny: r4(duty), consumption_tax_cny: r4(consumptionTax), vat_cny: r4(vat),
+    vat_deductible: deductible,
+    vat_note: deductible ? "可抵扣：不进成本，单列垫付资金" : "不可抵扣：全额计入成本",
+    landed_total_cny: r4(landed), landed_unit_cny: r4(landed / qty), quantity: qty,
+    breakdown: breakdown,
+    effective_tax_burden_rate: effBurden !== null ? r4(effBurden) : null,
+    warnings: warnings
+  };
+}
+
+const MODES = {
+  quote: modeQuote, price: modePrice, score: modeScore,
+  inventory: modeInventory, landed: modeLanded
+};
+
+function compute(mode, payload) {
+  if (!MODES[mode]) throw new Error("未知计算模式: " + mode);
+  return MODES[mode](payload);
+}
+
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = { compute: compute, MODES: MODES, pyRound: pyRound };
+}
+/*__CORE_END__*/
+</script>
+
+<script>
+/* =========================================================================
+ * 界面层（仅在浏览器运行）
+ * ========================================================================= */
+if (typeof document !== "undefined") (function () {
+
+  const fmt = (v, d) => {
+    if (v === null || v === undefined) return "—";
+    if (typeof v !== "number") return String(v);
+    if (!Number.isFinite(v)) return "—";
+    const n = (d === undefined) ? 2 : d;
+    return v.toLocaleString("zh-CN", { minimumFractionDigits: n, maximumFractionDigits: n });
+  };
+  const pct = v => (v === null || v === undefined) ? "—" : (v * 100).toFixed(2) + "%";
+  const int = v => (v === null || v === undefined) ? "—" : fmt(v, 0);
+  const esc = s => String(s === null || s === undefined ? "" : s)
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+
+  /* ---------------- 模式定义 ---------------- */
+  const F = {
+    text: (k, label, o) => Object.assign({ k, label, type: "text" }, o),
+    number: (k, label, o) => Object.assign({ k, label, type: "number" }, o),
+    pct: (k, label, o) => Object.assign({ k, label, type: "pct" }, o),
+    select: (k, label, opts, o) => Object.assign({ k, label, type: "select", opts }, o),
+    bool: (k, label, o) => Object.assign({ k, label, type: "bool" }, o)
+  };
+
+  const SCHEMA = {
+    quote: {
+      tab: "报价比价",
+      title: "多份报价横向比价",
+      hint: "把含税/未税、运费、账期拉成同一口径，算出每家的到厂单位成本与年度总成本，并按成本排名。",
+      scalars: [
+        F.number("annual_demand", "年需求量", { unit: "件/年", hint: "填了才算年度 TCO 与年度节降" }),
+        F.pct("capital_cost_annual", "资金成本率", { unit: "%/年", hint: "如 6%（用于算账期占用）" })
+      ],
+      rowKey: "offers", rowName: "报价",
+      cols: [
+        F.text("supplier", "供应商", { required: true, wide: true }),
+        F.text("item", "物料", { wide: true }),
+        F.number("qty", "报价数量", { required: true }),
+        F.number("quoted_price", "报价单价", { required: true }),
+        F.select("price_tax", "含税口径", [["excluded", "未税"], ["included", "含税"]]),
+        F.pct("tax_rate", "税率", { unit: "%" }),
+        F.bool("deductible", "进项可抵扣"),
+        F.number("freight", "运费"),
+        F.number("origin_charges", "出口地费用"),
+        F.number("destination_charges", "目的地费用"),
+        F.number("one_time", "一次性费用"),
+        F.number("annual_service", "年度服务费"),
+        F.number("rebate", "返利/折让"),
+        F.number("payment_days", "账期", { unit: "天" }),
+        F.number("moq", "最小起订量"),
+        F.number("lead_time_days", "交期", { unit: "天" }),
+        F.text("incoterm", "贸易术语"),
+        F.text("currency", "币种", { hint: "外币填 USD 等，并填汇率" }),
+        F.number("fx_rate", "汇率", { hint: "外币→人民币" })
+      ],
+      rowDefaults: { price_tax: "excluded", tax_rate: 0.13, deductible: true, currency: "CNY", fx_rate: 1.0 },
+      hasBaseline: true
+    },
+    price: {
+      tab: "价格分析",
+      title: "采购价格趋势",
+      hint: "按期间汇总加权均价、环比、波动率，算 PPV（采购价差）与供应商份额。",
+      scalars: [
+        F.number("baseline_price", "基准价", { unit: "元", hint: "标准成本/目标价，用于算 PPV" })
+      ],
+      rowKey: "orders", rowName: "订单行",
+      cols: [
+        F.text("period", "期间", { hint: "如 2026-04" }),
+        F.text("supplier", "供应商", { wide: true }),
+        F.number("qty", "数量", { required: true }),
+        F.number("unit_price", "单价", { required: true }),
+        F.select("price_tax", "含税口径", [["excluded", "未税"], ["included", "含税"]]),
+        F.pct("tax_rate", "税率", { unit: "%" }),
+        F.bool("deductible", "进项可抵扣"),
+        F.select("status", "状态", [["normal", "正常"], ["cancelled", "取消"]])
+      ],
+      rowDefaults: { price_tax: "excluded", tax_rate: 0.13, deductible: true, status: "normal" }
+    },
+    score: {
+      tab: "供应商评分",
+      title: "门槛校验 + 加权评分",
+      hint: "先过门槛（不通过直接淘汰），再按权重对各项指标做 min-max 归一后加权算总分。权重合计应等于 100%。",
+      score: true
+    },
+    inventory: {
+      tab: "库存补货",
+      title: "安全库存与补货点",
+      hint: "按需求与提前期的双波动算安全库存、再订货点，并给出受 MOQ / 订货倍数约束的建议下单量。",
+      scalars: [
+        F.number("on_hand", "账面库存", { required: true }),
+        F.number("blocked", "冻结", { def: 0 }),
+        F.number("allocated", "已分配", { def: 0 }),
+        F.number("in_transit", "在途", { def: 0 }),
+        F.number("backorders", "欠交", { def: 0 }),
+        F.number("committed", "已承诺", { def: 0 }),
+        F.number("avg_daily_demand", "日均需求", { required: true }),
+        F.number("demand_std_daily", "需求日标准差", { def: 0 }),
+        F.number("lead_time_days", "提前期", { unit: "天", required: true }),
+        F.number("lead_time_std_days", "提前期标准差", { unit: "天", def: 0 }),
+        F.number("service_z", "服务水平系数 Z", { def: 1.65, hint: "95%≈1.65，99%≈2.33" }),
+        F.number("review_period_days", "盘点周期", { unit: "天", def: 0 }),
+        F.number("moq", "最小起订量"),
+        F.number("order_multiple", "订货倍数"),
+        F.text("item", "物料", {}),
+        F.text("warehouse", "仓库", {}),
+        F.text("snapshot_date", "快照日期", {})
+      ]
+    },
+    landed: {
+      tab: "进口到岸成本",
+      title: "进口 landed cost 测算",
+      hint: "按贸易术语推算完税价格，再算关税、消费税、增值税（是否计入成本），得出到岸总成本与单位成本。",
+      scalars: [
+        F.select("trade_term", "贸易术语", [["EXW", "EXW 工厂交货"], ["FOB", "FOB 装运港船上交货"],
+          ["CFR", "CFR 成本加运费"], ["CIF", "CIF 成本加保险费运费"],
+          ["DAP", "DAP 目的地交货"], ["DPU", "DPU 目的地卸货"], ["DDP", "DDP 完税后交货"]]),
+        F.number("fx_rate", "汇率", { required: true, hint: "外币→人民币" }),
+        F.number("quantity", "数量", { required: true }),
+        F.number("goods_value", "货值", { unit: "外币" }),
+        F.number("freight", "国际运费", { unit: "外币" }),
+        F.number("insurance", "保险费", { unit: "外币" }),
+        F.number("origin_charges", "出口地费用", { unit: "外币" }),
+        F.number("destination_charges", "进口地港杂", { unit: "元" }),
+        F.number("brokerage", "报关费", { unit: "元" }),
+        F.pct("duty_rate", "关税率", { unit: "%", required: true }),
+        F.pct("vat_rate", "增值税率", { unit: "%", required: true }),
+        F.pct("consumption_tax_rate", "消费税率", { unit: "%", def: 0 }),
+        F.bool("vat_deductible", "增值税可抵扣"),
+        F.number("other_taxes", "其他费用", { unit: "元" })
+      ]
+    }
+  };
+
+  /* ---------------- 示例数据 ---------------- */
+  const EXAMPLES = {
+    quote: {
+      annual_demand: 120000, capital_cost_annual: 0.06,
+      baseline: { supplier: "现供应商（近6月加权净价）", net_unit: 11.68 },
+      offers: [
+        { supplier: "沪连精密（示例）", item: "工业连接器 X20", qty: 20000, quoted_price: 12.5, price_tax: "included", tax_rate: 0.13, deductible: true, currency: "CNY", fx_rate: 1.0, freight: 1200, origin_charges: 0, destination_charges: 300, one_time: 5000, annual_service: 0, rebate: 0, payment_days: 60, moq: 5000, lead_time_days: 25, incoterm: "EXW 上海" },
+        { supplier: "深科电子（示例）", item: "工业连接器 X20", qty: 30000, quoted_price: 10.8, price_tax: "excluded", tax_rate: 0.13, deductible: true, currency: "CNY", fx_rate: 1.0, freight: 1800, origin_charges: 0, destination_charges: 0, one_time: 0, annual_service: 2000, rebate: 3000, payment_days: 30, moq: 10000, lead_time_days: 35, incoterm: "送货到厂（东莞）" },
+        { supplier: "苏恒连接器（示例·小规模3%）", item: "工业连接器 X20（等效料）", qty: 10000, quoted_price: 12.2, price_tax: "included", tax_rate: 0.03, deductible: false, currency: "CNY", fx_rate: 1.0, freight: 600, origin_charges: 0, destination_charges: 0, one_time: 0, annual_service: 0, rebate: 0, payment_days: 45, moq: 2000, lead_time_days: 15, incoterm: "EXW 苏州" }
+      ]
+    },
+    price: {
+      baseline_price: 11.68,
+      orders: [
+        { period: "2026-04", supplier: "沪连精密（示例）", qty: 10000, unit_price: 11.5, price_tax: "excluded", tax_rate: 0.13, deductible: true, status: "normal" },
+        { period: "2026-04", supplier: "苏恒连接器（示例）", qty: 5000, unit_price: 11.9, price_tax: "excluded", tax_rate: 0.13, deductible: true, status: "normal" },
+        { period: "2026-05", supplier: "沪连精密（示例）", qty: 12000, unit_price: 11.5, price_tax: "excluded", tax_rate: 0.13, deductible: true, status: "normal" },
+        { period: "2026-06", supplier: "沪连精密（示例）", qty: 8000, unit_price: 11.8, price_tax: "excluded", tax_rate: 0.13, deductible: true, status: "normal" },
+        { period: "2026-07", supplier: "深科电子（示例）", qty: 20000, unit_price: 10.9, price_tax: "excluded", tax_rate: 0.13, deductible: true, status: "normal" },
+        { period: "2026-08", supplier: "深科电子（示例）", qty: 18000, unit_price: 10.8, price_tax: "excluded", tax_rate: 0.13, deductible: true, status: "normal" },
+        { period: "2026-08", supplier: "苏恒连接器（示例）", qty: 2000, unit_price: 12.0, price_tax: "excluded", tax_rate: 0.13, deductible: true, status: "normal" },
+        { period: "2026-09", supplier: "深科电子（示例）", qty: 22000, unit_price: 10.8, price_tax: "excluded", tax_rate: 0.13, deductible: true, status: "normal" }
+      ]
+    },
+    score: {
+      gate_rules: [
+        { key: "iso9001", label: "ISO9001 认证在有效期内" },
+        { key: "env_compliant", label: "近一年无重大环保/安全处罚" },
+        { key: "rohs", label: "物料 RoHS 合规声明可提供" }
+      ],
+      weights: [
+        { key: "net_price", label: "归一化净单价(元)", weight: 0.30, direction: "lower" },
+        { key: "pass_rate", label: "近6月批次合格率", weight: 0.30, direction: "higher" },
+        { key: "otd", label: "近6月 OTD 准时交付率", weight: 0.25, direction: "higher" },
+        { key: "payment_days", label: "账期(天)", weight: 0.15, direction: "higher" }
+      ],
+      candidates: [
+        { supplier: "沪连精密（示例）", gates: { iso9001: true, env_compliant: true, rohs: true }, metrics: { net_price: 11.32, pass_rate: 0.985, otd: 0.96, payment_days: 60 } },
+        { supplier: "深科电子（示例）", gates: { iso9001: true, env_compliant: true, rohs: true }, metrics: { net_price: 10.8, pass_rate: 0.94, otd: 0.88, payment_days: 30 } },
+        { supplier: "苏恒连接器（示例）", gates: { iso9001: true, env_compliant: false, rohs: true }, metrics: { net_price: 11.84, pass_rate: 0.97, otd: 0.95, payment_days: 45 } },
+        { supplier: "甬新电气（示例·待补证）", gates: { iso9001: true, env_compliant: true, rohs: null }, metrics: { net_price: 11.1, pass_rate: 0.96, payment_days: 50 } }
+      ]
+    },
+    inventory: {
+      on_hand: 8200, blocked: 300, allocated: 900, in_transit: 4000,
+      backorders: 0, committed: 1500, avg_daily_demand: 330, demand_std_daily: 70,
+      lead_time_days: 14, lead_time_std_days: 3, service_z: 1.65, review_period_days: 0,
+      moq: 5000, order_multiple: 500, item: "工业连接器 X20（示例物料）",
+      warehouse: "一号仓", snapshot_date: "2026-10-05"
+    },
+    landed: {
+      trade_term: "FOB", fx_rate: 7.12, goods_value: 50000, freight: 2500, insurance: 250,
+      origin_charges: 0, destination_charges: 1800, brokerage: 1200,
+      duty_rate: 0.08, vat_rate: 0.13, vat_deductible: true,
+      consumption_tax_rate: 0, other_taxes: 0, quantity: 10000
+    }
+  };
+
+  /* ---------------- 状态 ---------------- */
+  const state = { mode: "quote", data: {}, result: null, error: null };
+  let uid = 0;
+  const nextId = () => "r" + (++uid);
+
+  function blankRow(schema) {
+    const r = { _id: nextId() };
+    for (const c of (schema.cols || [])) {
+      if (c.type === "bool") r[c.k] = c.k in (schema.rowDefaults || {}) ? schema.rowDefaults[c.k] : false;
+      else if (c.k in (schema.rowDefaults || {})) r[c.k] = schema.rowDefaults[c.k];
+      else r[c.k] = "";
+    }
+    return r;
+  }
+
+  function initMode(m) {
+    if (state.data[m]) return;
+    const s = SCHEMA[m];
+    const d = { scalars: {}, rows: [], baseline: {}, score: null };
+    for (const f of (s.scalars || [])) d.scalars[f.k] = (f.def !== undefined) ? f.def : "";
+    if (s.rowKey) {
+      const n = (m === "quote") ? 3 : (m === "price" ? 4 : 2);
+      for (let i = 0; i < n; i++) d.rows.push(blankRow(s));
+    }
+    if (s.hasBaseline) d.baseline = { supplier: "", net_unit: "" };
+    if (s.score) d.score = blankScore();
+    state.data[m] = d;
+  }
+
+  function blankScore() {
+    return {
+      gates: [{ _id: nextId(), label: "" }],
+      weights: [
+        { _id: nextId(), label: "价格", weight: 30, direction: "lower" },
+        { _id: nextId(), label: "质量", weight: 30, direction: "higher" },
+        { _id: nextId(), label: "交期", weight: 25, direction: "higher" },
+        { _id: nextId(), label: "服务", weight: 15, direction: "higher" }
+      ],
+      candidates: [{ _id: nextId(), supplier: "供应商 A", gates: [], metrics: [] }]
+    };
+  }
+
+  function syncScoreRow(c) {
+    const sc = state.data.score.score;
+    while (c.gates.length < sc.gates.length) c.gates.push(null);
+    c.gates.length = sc.gates.length;
+    while (c.metrics.length < sc.weights.length) c.metrics.push("");
+    c.metrics.length = sc.weights.length;
+    return c;
+  }
+
+  /* ---------------- 渲染：输入 ---------------- */
+  function fieldHtml(f, value, path) {
+    const id = "f_" + path.replace(/\W/g, "_");
+    let inner;
+    if (f.type === "select") {
+      inner = '<select data-path="' + esc(path) + '">' + f.opts.map(o =>
+        '<option value="' + esc(o[0]) + '"' + (String(value) === String(o[0]) ? " selected" : "") + '>' + esc(o[1]) + "</option>").join("") + "</select>";
+    } else if (f.type === "bool") {
+      return '<div class="f" style="flex:none"><label>&nbsp;</label><div class="chk">' +
+        '<input type="checkbox" id="' + id + '" data-path="' + esc(path) + '" data-type="bool"' + (value ? " checked" : "") + '>' +
+        '<label for="' + id + '" style="cursor:pointer">' + esc(f.label) + "</label></div></div>";
+    } else if (f.type === "pct") {
+      const shown = (value === "" || value === null || value === undefined) ? "" : pyRound(Number(value) * 100, 4);
+      inner = '<input type="number" step="any" id="' + id + '" data-path="' + esc(path) + '" data-type="pct" value="' + esc(shown) + '" placeholder="如 13">';
+    } else if (f.type === "number") {
+      inner = '<input type="number" step="any" id="' + id + '" data-path="' + esc(path) + '" data-type="number" value="' + esc(value === null || value === undefined ? "" : value) + '">';
+    } else {
+      inner = '<input type="text" id="' + id + '" data-path="' + esc(path) + '" data-type="text" value="' + esc(value) + '">';
+    }
+    const unit = f.unit ? '<span class="u">' + esc(f.unit) + "</span>" : "";
+    const req = f.required ? '<span class="req" title="必填">*</span>' : "";
+    const h = f.hint ? '<span class="u">' + esc(f.hint) + "</span>" : "";
+    return '<div class="f"' + (f.wide ? ' style="grid-column:span 2"' : "") + '><label for="' + id + '">' + esc(f.label) + req + unit + h + "</label>" + inner + "</div>";
+  }
+
+  function renderInputs() {
+    const m = state.mode, s = SCHEMA[m], d = state.data[m];
+    let html = '<div class="card"><h2>' + esc(s.title) + '</h2><div class="hint">' + esc(s.hint) + "</div>";
+
+    if (s.score) {
+      html += renderScoreInputs(d.score);
+    } else {
+      if (s.scalars && s.scalars.length) {
+        html += '<div class="grid">' + s.scalars.map(f =>
+          fieldHtml(f, d.scalars[f.k], m + ".s." + f.k)).join("") + "</div>";
+      }
+      if (s.rowKey) {
+        html += '<div style="margin-top:16px"><div class="row" style="margin-bottom:10px">' +
+          '<b style="font-size:13.5px">' + esc(s.rowName) + '（' + d.rows.length + "）</b>" +
+          '<div class="spacer"></div></div>';
+        html += d.rows.map((r, i) =>
+          '<div class="rowcard"><div class="rowhead"><b>' + esc(s.rowName) + " " + (i + 1) + "</b>" +
+          '<button class="xbtn" data-act="del-row" data-i="' + i + '">删除</button></div>' +
+          '<div class="grid">' + s.cols.map(c => fieldHtml(c, r[c.k], m + ".r." + r._id + "." + c.k)).join("") + "</div></div>"
+        ).join("");
+        html += '<button class="btn ghost sm" data-act="add-row">+ 添加' + esc(s.rowName) + "</button></div>";
+      }
+      if (s.hasBaseline) {
+        html += '<div class="subgrid"><div style="grid-column:1/-1;font-size:12.5px;color:var(--muted)">' +
+          '对照基线（选填，用于算节降）</div>' +
+          fieldHtml(F.text("supplier", "基线名称", {}), d.baseline.supplier, m + ".b.supplier") +
+          fieldHtml(F.number("net_unit", "基线单位成本", { unit: "元", hint: "如近6月加权净价" }), d.baseline.net_unit, m + ".b.net_unit") +
+          "</div>";
+      }
+    }
+    html += "</div>";
+    return html;
+  }
+
+  function renderScoreInputs(sc) {
+    let h = '<div style="margin-bottom:6px"><b style="font-size:13.5px">① 门槛条件（不通过直接淘汰）</b></div>';
+    h += sc.gates.map((g, i) =>
+      '<div class="row" style="margin-bottom:8px">' +
+      '<input type="text" data-spath="gates.' + i + '.label" value="' + esc(g.label) + '" placeholder="如 ISO9001 认证在有效期内" style="max-width:520px">' +
+      '<button class="xbtn" data-sact="del-gate" data-i="' + i + '">删除</button></div>').join("");
+    h += '<button class="btn ghost sm" data-sact="add-gate">+ 添加门槛</button>';
+
+    h += '<div style="margin:20px 0 6px"><b style="font-size:13.5px">② 评分指标与权重（合计应为 100%）</b>' +
+      '<span style="color:var(--muted);font-size:12.5px;margin-left:8px">方向：越高越好 / 越低越好</span></div>';
+    h += sc.weights.map((w, i) =>
+      '<div class="row" style="margin-bottom:8px">' +
+      '<input type="text" data-spath="weights.' + i + '.label" value="' + esc(w.label) + '" placeholder="指标名" style="max-width:240px">' +
+      '<span style="color:var(--muted)">权重</span>' +
+      '<input type="number" step="any" data-spath="weights.' + i + '.weight" value="' + esc(w.weight) + '" style="width:88px">' +
+      '<span style="color:var(--muted)">%</span>' +
+      '<select data-spath="weights.' + i + '.direction" style="width:140px">' +
+      '<option value="higher"' + (w.direction === "higher" ? " selected" : "") + ">越高越好</option>" +
+      '<option value="lower"' + (w.direction === "lower" ? " selected" : "") + ">越低越好</option></select>" +
+      '<button class="xbtn" data-sact="del-weight" data-i="' + i + '">删除</button></div>').join("");
+    h += '<button class="btn ghost sm" data-sact="add-weight">+ 添加指标</button>';
+
+    h += '<div style="margin:20px 0 6px"><b style="font-size:13.5px">③ 供应商（门槛三态 + 各项指标）</b></div>';
+    h += sc.candidates.map((c, ci) => {
+      syncScoreRow(c);
+      let g = sc.gates.map((gt, gi) => {
+        const v = c.gates[gi];
+        return '<div class="f"><label>' + esc(gt.label || ("门槛 " + (gi + 1))) + "</label>" +
+          '<select data-spath="candidates.' + ci + '.gates.' + gi + '">' +
+          '<option value="pass"' + (v === true ? " selected" : "") + ">通过</option>" +
+          '<option value="fail"' + (v === false ? " selected" : "") + ">不通过（淘汰）</option>" +
+          '<option value="pending"' + (v === null || v === undefined ? " selected" : "") + ">待核实</option>" +
+          "</select></div>";
+      }).join("");
+      let mt = sc.weights.map((w, wi) =>
+        '<div class="f"><label>' + esc(w.label || ("指标 " + (wi + 1))) + "</label>" +
+        '<input type="number" step="any" data-spath="candidates.' + ci + '.metrics.' + wi + '" value="' +
+        esc(c.metrics[wi] === null || c.metrics[wi] === undefined ? "" : c.metrics[wi]) + '" placeholder="留空=不计分"></div>').join("");
+      return '<div class="rowcard"><div class="rowhead"><b>候选 ' + (ci + 1) + "</b>" +
+        '<button class="xbtn" data-sact="del-cand" data-i="' + ci + '">删除</button></div>' +
+        '<div class="f" style="margin-bottom:10px"><label>供应商名称 <span class="req">*</span></label>' +
+        '<input type="text" data-spath="candidates.' + ci + '.supplier" value="' + esc(c.supplier) + '"></div>' +
+        '<div class="grid">' + g + "</div>" +
+        '<div class="grid" style="margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)">' + mt + "</div>" +
+        "</div>";
+    }).join("");
+    h += '<button class="btn ghost sm" data-sact="add-cand">+ 添加供应商</button>';
+    return h;
+  }
+
+  /* ---------------- 取值 ---------------- */
+  function readPct(el) {
+    const v = el.value.trim();
+    if (v === "") return null;
+    const n = Number(v);
+    return Number.isFinite(n) ? n / 100 : null;
+  }
+  function readNum(el) {
+    const v = el.value.trim();
+    if (v === "") return null;
+    const n = Number(v);
+    return Number.isFinite(n) ? n : null;
+  }
+  function readText(el) { return el.value.trim() || null; }
+
+  function collect() {
+    const m = state.mode, s = SCHEMA[m], d = state.data[m];
+    const p = {};
+
+    if (s.score) {
+      const sc = d.score;
+      const gates = sc.gates.map((g, i) => ({ key: "g" + (i + 1), label: g.label || ("门槛 " + (i + 1)) }));
+      const weights = sc.weights.map((w, i) => ({
+        key: "w" + (i + 1), label: w.label || ("指标 " + (i + 1)),
+        weight: (Number(w.weight) || 0) / 100, direction: w.direction
+      }));
+      p.gate_rules = gates;
+      p.weights = weights;
+      p.candidates = sc.candidates.map(c => {
+        syncScoreRow(c);
+        const g = {};
+        c.gates.forEach((v, i) => {
+          const key = gates[i].key;
+          const val = (v === true || v === "pass") ? true : (v === false || v === "fail") ? false : null;
+          if (key) g[key] = val;
+        });
+        const mt = {};
+        c.metrics.forEach((v, i) => {
+          const key = weights[i] && weights[i].key;
+          if (!key) return;
+          const raw = (v === "" || v === null || v === undefined) ? null : Number(v);
+          mt[key] = (raw !== null && Number.isFinite(raw)) ? raw : null;
+        });
+        return { supplier: c.supplier || null, gates: g, metrics: mt };
+      });
+      sc.candidates.forEach((c, i) => { if (!c.supplier) p.candidates[i].supplier = "候选 " + (i + 1); });
+      return p;
+    }
+
+    for (const f of (s.scalars || [])) {
+      const el = document.querySelector('[data-path="' + m + '.s.' + f.k + '"]');
+      if (!el) continue;
+      let v;
+      if (f.type === "bool") v = el.checked;
+      else if (f.type === "pct") v = readPct(el);
+      else if (f.type === "number") v = readNum(el);
+      else v = readText(el);
+      if (v !== null && v !== "" ) p[f.k] = v;
+    }
+
+    if (s.rowKey) {
+      p[s.rowKey] = d.rows.map(r => {
+        const o = {};
+        for (const c of s.cols) {
+          const el = document.querySelector('[data-path="' + m + ".r." + r._id + "." + c.k + '"]');
+          if (!el) continue;
+          let v;
+          if (c.type === "bool") v = el.checked;
+          else if (c.type === "pct") v = readPct(el);
+          else if (c.type === "number") v = readNum(el);
+          else v = readText(el);
+          if (v !== null && v !== "") o[c.k] = v;
+        }
+        return o;
+      });
+    }
+
+    if (s.hasBaseline) {
+      const b = {};
+      const e1 = document.querySelector('[data-path="' + m + '.b.supplier"]');
+      const e2 = document.querySelector('[data-path="' + m + '.b.net_unit"]');
+      if (e1 && e1.value.trim()) b.supplier = e1.value.trim();
+      if (e2 && e2.value.trim()) b.net_unit = Number(e2.value);
+      if (Object.keys(b).length) p.baseline = b;
+    }
+    return p;
+  }
+
+  /* ---------------- 渲染：结果 ---------------- */
+  function kpi(k, v, unit, cls) {
+    return '<div class="kpi ' + (cls || "") + '"><div class="k">' + esc(k) + "</div>" +
+      '<div class="v">' + v + (unit ? "<small>" + esc(unit) + "</small>" : "") + "</div></div>";
+  }
+  function kpis(list) { return '<div class="kpis">' + list.join("") + "</div>"; }
+  function table(head, rows) {
+    return '<div class="scroll"><table><thead><tr>' +
+      head.map(h => "<th" + (h[1] === "n" ? ' class="n"' : "") + ">" + esc(h[0]) + "</th>").join("") +
+      "</tr></thead><tbody>" + rows.map(r => "<tr>" + r.map((c, i) =>
+        "<td" + (head[i] && head[i][1] === "n" ? ' class="n"' : "") + ">" + c + "</td>").join("") + "</tr>").join("") +
+      "</tbody></table></div>";
+  }
+  function warnBlock(list, cls) {
+    if (!list || !list.length) return "";
+    return list.map(w => '<div class="msg ' + cls + '">' + esc(w) + "</div>").join("");
+  }
+  const gateTag = st => st === "pass" ? '<span class="tag p">通过</span>'
+    : st === "fail" ? '<span class="tag f">不通过</span>' : '<span class="tag q">待核实</span>';
+
+  function renderResult(r) {
+    if (!r) return "";
+    let h = "";
+    if (r.mode === "quote") {
+      const best = r.offers.find(o => o.rank === 1);
+      const s = r.savings_vs_baseline;
+      h += kpis([
+        kpi("综合最优", esc(best.supplier), "", "hl"),
+        kpi("到厂单位成本", fmt(best.unit_acquisition_cny), "元"),
+        kpi("年度总成本 TCO", best.annual_tco_cny !== null ? fmt(best.annual_tco_cny, 0) : "—", "元"),
+        s ? kpi("相对基线年节降", fmt(s.annual_saving_cny, 0), "元", s.annual_saving_cny >= 0 ? "ok" : "bad")
+          : kpi("相对基线", "未设基线", "")
+      ]);
+      h += "<div style=\"font-size:13px;color:var(--muted);margin-bottom:8px\">排名依据：" +
+        (r.ranking_metric === "annual_tco_cny" ? "年度总成本 TCO（从低到高）" : "到厂单位成本（从低到高，未填年需求量故不算年度 TCO）") + "</div>";
+      h += table(
+        [["排名", "n"], ["供应商", ""], ["净单价", "n"], ["到厂单位成本", "n"], ["年度 TCO", "n"], ["账期占用", "n"], ["账期", "n"], ["提示", ""]],
+        r.offers.slice().sort((a, b) => a.rank - b.rank).map(o => [
+          o.rank === 1 ? '<span class="tag r1">1</span>' : o.rank,
+          esc(o.supplier), fmt(o.net_unit_cny), fmt(o.unit_acquisition_cny),
+          o.annual_tco_cny !== null ? fmt(o.annual_tco_cny, 0) : "—",
+          o.payment_capital_cost_cny !== undefined ? fmt(o.payment_capital_cost_cny, 0) : "—",
+          o.payment_days || 0, esc((o.notes || []).join("；"))
+        ]));
+      if (s) {
+        h += '<div class="msg i"><b>相对基线节降</b>：基线（' + esc(s.baseline_supplier) + "）单位成本 " +
+          fmt(s.baseline_unit_cny) + " 元 → " + esc(s.against_supplier) + " " + fmt(s.baseline_unit_cny - s.per_unit_saving_cny) +
+          " 元，单件省 " + fmt(s.per_unit_saving_cny) + " 元（" + pct(s.saving_rate) + "）" +
+          (s.annual_saving_cny !== null ? "，年化约 " + fmt(s.annual_saving_cny, 0) + " 元" : "") + "</div>";
+      }
+      h += warnBlock(r.warnings, "w");
+    } else if (r.mode === "price") {
+      h += kpis([
+        kpi("加权均价", fmt(r.wap_overall), "元", "hl"),
+        kpi("总采购量", fmt(r.total_qty, 0), ""),
+        kpi("总金额", fmt(r.total_spend_cny, 0), "元"),
+        kpi("首→末期间变化", pct(r.change_first_to_last), "", (r.change_first_to_last || 0) > 0 ? "bad" : "ok"),
+        kpi("期间波动 CV", fmt(r.cv_by_period, 4), ""),
+        kpi("PPV 采购价差", r.ppv_vs_baseline_cny !== null ? fmt(r.ppv_vs_baseline_cny, 0) : "—", "元",
+            (r.ppv_vs_baseline_cny || 0) > 0 ? "bad" : "ok")
+      ]);
+      h += table([["期间", ""], ["数量", "n"], ["加权均价", "n"], ["环比", "n"]],
+        r.periods.map(p => [esc(p.period), fmt(p.qty, 0), fmt(p.wap), p.mom === null ? "—" :
+          '<span style="color:' + (p.mom > 0 ? "var(--bad)" : "var(--ok)") + '">' + pct(p.mom) + "</span>"]));
+      h += '<div style="font-size:13.5px;font-weight:600;margin:4px 0 8px">供应商份额</div>';
+      h += table([["供应商", ""], ["金额", "n"], ["占比", "n"]],
+        r.supplier_mix.map(x => [esc(x.supplier), fmt(x.spend, 0), pct(x.share)]));
+      h += warnBlock(r.warnings, "w");
+    } else if (r.mode === "score") {
+      const top = r.candidates.find(c => c.rank === 1);
+      h += kpis([
+        top ? kpi("评分第一", esc(top.supplier), "", "hl") : kpi("无有效候选", "全部被淘汰", "", "bad"),
+        top ? kpi("加权总分", fmt(top.final_score, 4), "") : "",
+        kpi("权重合计", pct(r.weight_sum), "", Math.abs(r.weight_sum - 1) < 1e-6 ? "ok" : "bad")
+      ]);
+      h += table([["排名", "n"], ["供应商", ""], ["加权总分", "n"], ["门槛", ""], ["结论", ""]],
+        r.candidates.map(c => [
+          c.rank === null ? "—" : (c.rank === 1 ? '<span class="tag r1">1</span>' : c.rank),
+          esc(c.supplier),
+          c.final_score === null ? "—" : fmt(c.final_score, 4),
+          c.gates.length ? c.gates.map(g => gateTag(g.status)).join(" ") : '<span class="tag q">未设门槛</span>',
+          esc(c.result)
+        ]));
+      h += '<div style="font-size:13.5px;font-weight:600;margin:4px 0 8px">各项归一化明细</div>';
+      const wl = r.candidates.length ? r.candidates[0].metric_details.map(d => d.label) : [];
+      h += table([["供应商", ""]].concat(wl.map(l => [l, "n"])),
+        r.candidates.map(c => [esc(c.supplier)].concat(
+          c.metric_details.map(d => d.status === "missing" ? '<span style="color:var(--muted)">缺失</span>'
+            : fmt(d.normalized, 4)))));
+      h += warnBlock(r.warnings, "w");
+    } else if (r.mode === "inventory") {
+      h += kpis([
+        kpi("建议下单量", fmt(r.order_qty_constrained, 0), "", "hl"),
+        kpi("再订货点 ROP", fmt(r.rop, 0), ""),
+        kpi("安全库存", fmt(r.safety_stock, 0), ""),
+        kpi("当前库存头寸", fmt(r.inventory_position, 0), "",
+            r.inventory_position < r.rop ? "bad" : "ok"),
+        kpi("可用库存", fmt(r.usable_stock, 0), ""),
+        kpi("可供天数", r.days_of_supply !== null ? fmt(r.days_of_supply, 1) : "—", "天")
+      ]);
+      h += '<div class="msg i"><b>计算过程</b>：可用库存 = 账面 − 冻结 − 已分配 = ' + fmt(r.usable_stock, 0) +
+        "；库存头寸 = 可用 + 在途 − 欠交 − 已承诺 = " + fmt(r.inventory_position, 0) +
+        "；安全库存 = Z(" + r.service_z + ") × √(提前期×需求σ² + 需求²×提前期σ²) = " + fmt(r.safety_stock, 0) +
+        "；ROP = 日均需求 ×(提前期+盘点周期) + 安全库存 = " + fmt(r.rop, 0) +
+        "；未受约束建议量 = " + fmt(r.order_qty_raw, 0) + "</div>";
+      h += warnBlock(r.warnings, "w");
+    } else if (r.mode === "landed") {
+      h += kpis([
+        kpi("到岸总成本", fmt(r.landed_total_cny, 0), "元", "hl"),
+        kpi("单位到岸成本", fmt(r.landed_unit_cny), "元"),
+        kpi("完税价格", fmt(r.customs_value_cny, 0), "元"),
+        kpi("关税", fmt(r.duty_cny, 0), "元"),
+        kpi("增值税", fmt(r.vat_cny, 0), "元", r.vat_deductible ? "ok" : "bad"),
+        kpi("综合税负率", pct(r.effective_tax_burden_rate), "")
+      ]);
+      h += '<div class="msg i"><b>增值税</b>：' + esc(r.vat_note) + "（贸易术语 " + esc(r.trade_term) + "，汇率 " + r.fx_rate + "）</div>";
+      h += table([["成本构成", ""], ["金额（元）", "n"]],
+        Object.keys(r.breakdown).map(k => [esc(k), fmt(r.breakdown[k], 0)]));
+      h += warnBlock(r.warnings, "w");
+    }
+    return h;
+  }
+
+  /* ---------------- 主流程 ---------------- */
+  function render() {
+    document.getElementById("tabs").innerHTML = Object.keys(SCHEMA).map(m =>
+      '<button class="tab' + (m === state.mode ? " on" : "") + '" data-tab="' + m + '">' +
+      esc(SCHEMA[m].tab) + "</button>").join("");
+
+    let html = renderInputs();
+
+    html += '<div class="row" style="margin:4px 0 16px">' +
+      '<button class="btn" data-act="run">开始计算</button>' +
+      '<button class="btn ghost" data-act="example">载入示例</button>' +
+      '<button class="btn ghost" data-act="clear">清空</button>' +
+      '<div class="spacer"></div>' +
+      '<button class="btn ghost sm" data-act="copy">复制结果 JSON</button>' +
+      '<button class="btn ghost sm" data-act="download">下载结果 JSON</button>' +
+      "</div>";
+
+    if (state.error) {
+      html += '<div class="card"><h2>计算未通过</h2><div class="err"><b>请检查输入</b>' + esc(state.error) + "</div></div>";
+    }
+
+    html += '<div class="card"><h2>计算结果</h2>';
+    if (!state.result && !state.error) {
+      html += '<div class="empty">点「载入示例」看一份虚构样例，或直接填自己的数据后点「开始计算」。</div>';
+    } else if (state.result) {
+      html += renderResult(state.result);
+      html += "<details><summary>原始结果 JSON（可复制给同事或存档）</summary><pre>" +
+        esc(JSON.stringify(state.result, null, 2)) + "</pre></details>";
+    }
+    html += "</div>";
+
+    document.getElementById("app").innerHTML = html;
+  }
+
+  /* ---------------- 事件 ---------------- */
+  document.addEventListener("click", ev => {
+    const t = ev.target.closest("[data-tab],[data-act],[data-sact]");
+    if (!t) return;
+    const s = SCHEMA[state.mode], d = state.data[state.mode];
+
+    if (t.dataset.tab) {
+      state.mode = t.dataset.tab;
+      state.result = null; state.error = null;
+      initMode(state.mode);
+      render();
+      return;
+    }
+    if (t.dataset.sact) {
+      const sc = d.score, a = t.dataset.sact, i = Number(t.dataset.i);
+      if (a === "add-gate") sc.gates.push({ _id: nextId(), label: "" });
+      if (a === "del-gate") { sc.gates.splice(i, 1); }
+      if (a === "add-weight") sc.weights.push({ _id: nextId(), label: "", weight: 0, direction: "higher" });
+      if (a === "del-weight") { sc.weights.splice(i, 1); }
+      if (a === "add-cand") sc.candidates.push(syncScoreRow({ _id: nextId(), supplier: "", gates: [], metrics: [] }));
+      if (a === "del-cand") { sc.candidates.splice(i, 1); }
+      sc.candidates.forEach(syncScoreRow);
+      state.result = null; state.error = null;
+      render();
+      return;
+    }
+
+    const a = t.dataset.act;
+    if (a === "add-row") {
+      d.rows.push(blankRow(s));
+      state.result = null; state.error = null; render();
+    } else if (a === "del-row") {
+      d.rows.splice(Number(t.dataset.i), 1);
+      if (!d.rows.length) d.rows.push(blankRow(s));
+      state.result = null; state.error = null; render();
+    } else if (a === "example") {
+      loadExample(state.mode);
+      render();
+    } else if (a === "clear") {
+      state.data[state.mode] = null;
+      state.result = null; state.error = null;
+      initMode(state.mode);
+      render();
+    } else if (a === "run") {
+      runCalc();
+    } else if (a === "copy") {
+      copyResult(t);
+    } else if (a === "download") {
+      downloadResult();
+    }
+  });
+
+  document.addEventListener("input", ev => {
+    const el = ev.target;
+    const sp = el.dataset.spath;
+    if (sp) {
+      const sc = state.data[state.mode].score;
+      const parts = sp.split(".");
+      let ref = sc;
+      for (let i = 0; i < parts.length - 1; i++) ref = ref[parts[i]];
+      const last = parts[parts.length - 1];
+      if (last === "weight") ref.weight = el.value;
+      else if (last === "direction") ref.direction = el.value;
+      else if (last === "supplier") ref.supplier = el.value;
+      else if (parts[parts.length - 2] === "gates") ref.gates[Number(last)] = el.value;
+      else if (parts[parts.length - 2] === "metrics") ref.metrics[Number(last)] = el.value;
+      else ref.label = el.value;
+      return;
+    }
+    const p = el.dataset.path;
+    if (!p) return;
+    const seg = p.split(".");
+    const m = seg[0], kind = seg[1];
+    const dd = state.data[m];
+    const val = () => {
+      const ty = el.dataset.type;
+      if (ty === "bool") return el.checked;
+      if (el.type === "checkbox") return el.checked;
+      return el.value;
+    };
+    if (kind === "s") dd.scalars[seg[2]] = val();
+    else if (kind === "b") dd.baseline[seg[2]] = val();
+    else if (kind === "r") {
+      const row = dd.rows.find(r => r._id === seg[2]);
+      if (row) row[seg[3]] = val();
+    }
+  });
+
+  function loadExample(m) {
+    const ex = EXAMPLES[m];
+    const s = SCHEMA[m];
+    if (s.score) {
+      const sc = blankScore();
+      sc.gates = ex.gate_rules.map(g => ({ _id: nextId(), label: g.label }));
+      sc.weights = ex.weights.map(w => ({ _id: nextId(), label: w.label, weight: w.weight * 100, direction: w.direction }));
+      sc.candidates = ex.candidates.map(c => syncScoreRow({
+        _id: nextId(), supplier: c.supplier,
+        gates: ex.gate_rules.map(g => c.gates[g.key] === undefined ? null : c.gates[g.key]),
+        metrics: ex.weights.map(w => c.metrics[w.key] === undefined ? "" : c.metrics[w.key])
+      }));
+      state.data[m].score = sc;
+    } else {
+      const d = state.data[m];
+      for (const f of (s.scalars || [])) {
+        const v = ex[f.k];
+        d.scalars[f.k] = (v === undefined || v === null) ? (f.def !== undefined ? f.def : "") : v;
+      }
+      if (s.rowKey) {
+        const base = Object.assign({}, s.rowDefaults);
+        d.rows = ex[s.rowKey].map(r => {
+          const row = { _id: nextId() };
+          for (const c of s.cols) row[c.k] = (c.k in r) ? r[c.k] : (c.k in base ? base[c.k] : "");
+          return row;
+        });
+      }
+      if (s.hasBaseline) {
+        const b = ex.baseline || {};
+        d.baseline = { supplier: b.supplier || "", net_unit: (b.net_unit === undefined ? "" : b.net_unit) };
+      }
+    }
+    state.result = null; state.error = null;
+  }
+
+  function runCalc() {
+    try {
+      const payload = collect();
+      state.result = compute(state.mode, payload);
+      state.error = null;
+    } catch (e) {
+      state.result = null;
+      state.error = (e && e.message) ? e.message : String(e);
+    }
+    render();
+    if (state.result) {
+      const el = document.querySelectorAll(".card");
+      if (el.length) el[el.length - 1].scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
+
+  function copyResult(btn) {
+    if (!state.result) return;
+    const text = JSON.stringify(state.result, null, 2);
+    const done = () => { const o = btn.textContent; btn.textContent = "已复制 ✓"; setTimeout(() => btn.textContent = o, 1400); };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, () => fallbackCopy(text, done));
+    } else fallbackCopy(text, done);
+  }
+  function fallbackCopy(text, done) {
+    const ta = document.createElement("textarea");
+    ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); done(); } catch (e) { /* 忽略 */ }
+    document.body.removeChild(ta);
+  }
+
+  function downloadResult() {
+    if (!state.result) return;
+    const d = new Date();
+    const stamp = d.getFullYear() + String(d.getMonth() + 1).padStart(2, "0") + String(d.getDate()).padStart(2, "0");
+    const blob = new Blob([JSON.stringify(state.result, null, 2)], { type: "application/json;charset=utf-8" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "采购决策_" + state.mode + "_" + stamp + ".json";
+    document.body.appendChild(a); a.click();
+    setTimeout(() => { URL.revokeObjectURL(a.href); document.body.removeChild(a); }, 0);
+  }
+
+  initMode(state.mode);
+  render();
+})();
+</script>
+</body>
+</html>
