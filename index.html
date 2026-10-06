@@ -124,9 +124,8 @@
          color:var(--muted);font-size:12.5px;line-height:1.8}
   .cta{margin-top:26px;background:var(--card);border:1px solid var(--line);
        border-radius:var(--radius);padding:18px;display:flex;gap:18px;align-items:center}
-  .cta .qr{flex:none;width:104px;height:104px;border:1px dashed var(--line);border-radius:8px;
-       display:flex;align-items:center;justify-content:center;text-align:center;
-       color:var(--muted);font-size:11.5px;line-height:1.5;background:#fafbfc}
+  .cta .qr{flex:none;width:116px;height:116px;border-radius:8px;background:#fff;
+       border:1px solid var(--line);display:block;object-fit:contain}
   .cta h3{margin:0 0 6px;font-size:15.5px;color:var(--ink)}
   .cta p{margin:0;font-size:13px;color:var(--ink2);line-height:1.75}
   .cta .dy{display:inline-block;margin-top:8px;background:var(--accent-bg);color:var(--accent);
@@ -160,9 +159,7 @@
 <main id="app"></main>
 
 <section class="cta">
-  <!-- 换成你的抖音二维码/头像：把下面这个 div 整段删掉，替换为
-       <img src="二维码.png" alt="抖音：采购老刘" style="width:104px;height:104px;border-radius:8px"> -->
-  <div class="qr">二维码 / 头像位<br>（贴你的抖音码）</div>
+  <img class="qr" src="抖音码.png" alt="抖音扫一扫 · 采购老刘" width="116" height="116">
   <div>
     <h3>这个工具帮你省到钱了吗？</h3>
     <p>我做了一套采购降本与供应商管理的实战方法，从比价、价格趋势，到库存补货、进口到岸成本，
