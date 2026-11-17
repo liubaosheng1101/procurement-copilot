@@ -1,0 +1,8 @@
+exit=0
+VERIFY_RUN_ID=pcv-20261117T062835Z-a1cfae
+VERIFY_URL=http://127.0.0.1:33283/
+VERIFY_COMMIT=1a1179dd4f550e01287df001fe8fbae5e13a9822
+chrome=/opt/google/chrome/chrome
+server_pid=6784
+ready=#tabs has five tabs and #app has 开始计算
+started_at=2026-11-17T06:31:51Z

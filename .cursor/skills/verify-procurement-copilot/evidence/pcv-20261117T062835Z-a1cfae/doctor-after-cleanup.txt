@@ -1,0 +1,2 @@
+DOCTOR_FAIL run=pcv-20261117T062835Z-a1cfae
+- no live state at /tmp/procurement-copilot-verify/pcv-20261117T062835Z-a1cfae/state.json

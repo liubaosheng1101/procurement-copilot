@@ -1,0 +1,18 @@
+{
+  "app": "procurement-copilot",
+  "run_id": "pcv-20261117T062835Z-a1cfae",
+  "commit": "1a1179dd4f550e01287df001fe8fbae5e13a9822",
+  "index_sha256": "29fea9807dec0c23c123957f4a5b52e9ae81485b76d593b40f8caad2e10f04d1",
+  "png_sha256": "a72e73e9f977cb66c304360e0c401864d5bd6036cb9baf5c08dfd4d74af88d50",
+  "repo_root": "/workspace",
+  "url": "http://127.0.0.1:33283/",
+  "port": 33283,
+  "server_pid": null,
+  "browser_pid": null,
+  "cdp_port": null,
+  "chrome": "/opt/google/chrome/chrome",
+  "evidence_dir": "/workspace/.cursor/skills/verify-procurement-copilot/evidence/pcv-20261117T062835Z-a1cfae",
+  "tmp_dir": "/tmp/procurement-copilot-verify/pcv-20261117T062835Z-a1cfae",
+  "state_path": "/tmp/procurement-copilot-verify/pcv-20261117T062835Z-a1cfae/state.json",
+  "started_at": "2026-11-17T06:31:51Z"
+}
