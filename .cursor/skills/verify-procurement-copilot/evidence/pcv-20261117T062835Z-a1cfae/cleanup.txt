@@ -1,0 +1,3 @@
+exit=0
+server 6784 stopped
+evidence kept at /workspace/.cursor/skills/verify-procurement-copilot/evidence/pcv-20261117T062835Z-a1cfae

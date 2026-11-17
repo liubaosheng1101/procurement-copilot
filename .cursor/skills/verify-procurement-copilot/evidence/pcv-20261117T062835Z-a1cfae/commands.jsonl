@@ -1,0 +1,163 @@
+{"ts": "2026-11-17T06:31:51Z", "cmd": "launch", "exit": 0, "url": "http://127.0.0.1:33283/", "commit": "1a1179dd4f550e01287df001fe8fbae5e13a9822", "pid": 6784}
+{"ts": "2026-11-17T06:31:52Z", "cmd": "doctor", "exit": 0, "url": "http://127.0.0.1:33283/", "pid": 6784}
+{"ts": "2026-11-17T06:31:52Z", "cmd": "browser start", "exit": 0, "stdout": "OK browser pid=7144 cdp=43853\n", "stderr": ""}
+{"ts": "2026-11-17T06:31:53Z", "cmd": "browser goto", "exit": 0, "stdout": "OK goto http://127.0.0.1:33283/\n", "stderr": ""}
+{"ts": "2026-11-17T06:31:53Z", "cmd": "browser click --selector button[data-tab=\"quote\"]", "exit": 0, "stdout": "OK click button[data-tab=\"quote\"]\n", "stderr": ""}
+{"ts": "2026-11-17T06:31:54Z", "cmd": "browser assert-text --selector h1 --equals 采购决策助手 · 网页版", "exit": 0, "stdout": "OK assert-text h1\n", "stderr": ""}
+{"ts": "2026-11-17T06:31:54Z", "cmd": "browser assert-text --selector button.tab.on --equals 报价比价", "exit": 0, "stdout": "OK assert-text button.tab.on\n", "stderr": ""}
+{"ts": "2026-11-17T06:31:55Z", "cmd": "browser assert-text --selector #app h2 --contains 多份报价横向比价", "exit": 0, "stdout": "OK assert-text #app h2\n", "stderr": ""}
+{"ts": "2026-11-17T06:31:55Z", "cmd": "browser assert-text --selector #app .empty --contains 点「载入示例」", "exit": 0, "stdout": "OK assert-text #app .empty\n", "stderr": ""}
+{"ts": "2026-11-17T06:31:56Z", "cmd": "browser screenshot --name quote/01-initial.png", "exit": 0, "stdout": "OK screenshot quote/01-initial.png\n", "stderr": ""}
+{"ts": "2026-11-17T06:31:56Z", "cmd": "browser click --selector button[data-act=\"run\"]", "exit": 0, "stdout": "OK click button[data-act=\"run\"]\n", "stderr": ""}
+{"ts": "2026-11-17T06:31:57Z", "cmd": "browser assert-text --selector #app h2 --contains 计算未通过", "exit": 0, "stdout": "OK assert-text #app h2\n", "stderr": ""}
+{"ts": "2026-11-17T06:31:57Z", "cmd": "browser assert-text --selector #app .err --contains 缺少必填字段: offers[0].supplier", "exit": 0, "stdout": "OK assert-text #app .err\n", "stderr": ""}
+{"ts": "2026-11-17T06:31:58Z", "cmd": "browser screenshot --name quote/02-blank-error.png", "exit": 0, "stdout": "OK screenshot quote/02-blank-error.png\n", "stderr": ""}
+{"ts": "2026-11-17T06:31:58Z", "cmd": "browser click --selector button[data-act=\"example\"]", "exit": 0, "stdout": "OK click button[data-act=\"example\"]\n", "stderr": ""}
+{"ts": "2026-11-17T06:31:59Z", "cmd": "browser assert-value --selector [data-path=\"quote.s.annual_demand\"] --equals 120000", "exit": 0, "stdout": "OK assert-value [data-path=\"quote.s.annual_demand\"]=120000\n", "stderr": ""}
+{"ts": "2026-11-17T06:31:59Z", "cmd": "browser assert-value --selector [data-path=\"quote.s.capital_cost_annual\"] --equals 6", "exit": 0, "stdout": "OK assert-value [data-path=\"quote.s.capital_cost_annual\"]=6\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:00Z", "cmd": "browser assert-value --selector input[data-path^=\"quote.r.\"][data-path$=\".supplier\"] --nth 0 --equals 沪连精密（示例）", "exit": 0, "stdout": "OK assert-value input[data-path^=\"quote.r.\"][data-path$=\".supplier\"]=沪连精密（示例）\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:00Z", "cmd": "browser assert-value --selector input[data-path^=\"quote.r.\"][data-path$=\".supplier\"] --nth 1 --equals 深科电子（示例）", "exit": 0, "stdout": "OK assert-value input[data-path^=\"quote.r.\"][data-path$=\".supplier\"]=深科电子（示例）\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:01Z", "cmd": "browser assert-value --selector input[data-path^=\"quote.r.\"][data-path$=\".supplier\"] --nth 2 --equals 苏恒连接器（示例·小规模3%）", "exit": 0, "stdout": "OK assert-value input[data-path^=\"quote.r.\"][data-path$=\".supplier\"]=苏恒连接器（示例·小规模3%）\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:01Z", "cmd": "browser assert-value --selector [data-path=\"quote.b.supplier\"] --equals 现供应商（近6月加权净价）", "exit": 0, "stdout": "OK assert-value [data-path=\"quote.b.supplier\"]=现供应商（近6月加权净价）\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:01Z", "cmd": "browser assert-value --selector [data-path=\"quote.b.net_unit\"] --equals 11.68", "exit": 0, "stdout": "OK assert-value [data-path=\"quote.b.net_unit\"]=11.68\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:02Z", "cmd": "browser assert-absent --text 计算未通过", "exit": 0, "stdout": "OK absent 计算未通过\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:02Z", "cmd": "browser assert-text --selector #app .empty --contains 点「载入示例」", "exit": 0, "stdout": "OK assert-text #app .empty\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:03Z", "cmd": "browser screenshot --name quote/03-example-filled.png", "exit": 0, "stdout": "OK screenshot quote/03-example-filled.png\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:03Z", "cmd": "browser click --selector button[data-act=\"run\"]", "exit": 0, "stdout": "OK click button[data-act=\"run\"]\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:04Z", "cmd": "browser assert-kpi --label 综合最优 --value 深科电子（示例）", "exit": 0, "stdout": "OK kpi 综合最优=深科电子（示例）\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:04Z", "cmd": "browser assert-kpi --label 到厂单位成本 --value 10.83元", "exit": 0, "stdout": "OK kpi 到厂单位成本=10.83元\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:05Z", "cmd": "browser assert-kpi --label 年度总成本 TCO --value 1,302,200元", "exit": 0, "stdout": "OK kpi 年度总成本 TCO=1,302,200元\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:05Z", "cmd": "browser assert-kpi --label 相对基线年节降 --value 102,396元", "exit": 0, "stdout": "OK kpi 相对基线年节降=102,396元\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:06Z", "cmd": "browser assert-text --selector #app --contains 年度总成本 TCO（从低到高）", "exit": 0, "stdout": "OK assert-text #app\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:06Z", "cmd": "browser assert-text --selector #app --contains 现供应商（近6月加权净价）", "exit": 0, "stdout": "OK assert-text #app\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:06Z", "cmd": "browser assert-order --selector #app table --sequence 深科电子（示例）|沪连精密（示例）|苏恒连接器（示例·小规模3%）", "exit": 0, "stdout": "OK order 深科电子（示例）|沪连精密（示例）|苏恒连接器（示例·小规模3%）\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:07Z", "cmd": "browser assert-absent --text 计算未通过", "exit": 0, "stdout": "OK absent 计算未通过\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:07Z", "cmd": "browser screenshot --name quote/04-result.png", "exit": 0, "stdout": "OK screenshot quote/04-result.png\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:08Z", "cmd": "browser download --selector button[data-act=\"download\"] --name quote/result.json --filename-regex ^采购决策_quote_[0-9]{8}\\.json$ --expect-mode quote --expect-metric annual_tco_cny --expect-rank1 深科电子（示例）", "exit": 0, "stdout": "OK download 采购决策_quote_20261117.json -> quote/result.json\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:08Z", "cmd": "browser assert-same-origin --name quote/requests.json", "exit": 0, "stdout": "OK same-origin entries=2\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:09Z", "cmd": "browser goto", "exit": 0, "stdout": "OK goto http://127.0.0.1:33283/\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:09Z", "cmd": "browser click --selector button[data-tab=\"price\"]", "exit": 0, "stdout": "OK click button[data-tab=\"price\"]\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:10Z", "cmd": "browser assert-text --selector button.tab.on --equals 价格分析", "exit": 0, "stdout": "OK assert-text button.tab.on\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:10Z", "cmd": "browser assert-text --selector #app h2 --contains 采购价格趋势", "exit": 0, "stdout": "OK assert-text #app h2\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:11Z", "cmd": "browser assert-text --selector #app .empty --contains 点「载入示例」", "exit": 0, "stdout": "OK assert-text #app .empty\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:11Z", "cmd": "browser click --selector button[data-act=\"run\"]", "exit": 0, "stdout": "OK click button[data-act=\"run\"]\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:12Z", "cmd": "browser assert-text --selector #app .err --contains 缺少必填字段: orders[0].qty", "exit": 0, "stdout": "OK assert-text #app .err\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:12Z", "cmd": "browser screenshot --name price/01-blank-error.png", "exit": 0, "stdout": "OK screenshot price/01-blank-error.png\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:13Z", "cmd": "browser click --selector button[data-act=\"example\"]", "exit": 0, "stdout": "OK click button[data-act=\"example\"]\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:13Z", "cmd": "browser assert-value --selector [data-path=\"price.s.baseline_price\"] --equals 11.68", "exit": 0, "stdout": "OK assert-value [data-path=\"price.s.baseline_price\"]=11.68\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:14Z", "cmd": "browser assert-value --selector input[data-path^=\"price.r.\"][data-path$=\".supplier\"] --nth 0 --equals 沪连精密（示例）", "exit": 0, "stdout": "OK assert-value input[data-path^=\"price.r.\"][data-path$=\".supplier\"]=沪连精密（示例）\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:14Z", "cmd": "browser assert-count --selector #app .rowcard --equals 8", "exit": 0, "stdout": "OK assert-count #app .rowcard=8\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:15Z", "cmd": "browser screenshot --name price/02-example-filled.png", "exit": 0, "stdout": "OK screenshot price/02-example-filled.png\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:15Z", "cmd": "browser click --selector button[data-act=\"run\"]", "exit": 0, "stdout": "OK click button[data-act=\"run\"]\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:16Z", "cmd": "browser assert-kpi --label 加权均价 --value 11.14元", "exit": 0, "stdout": "OK kpi 加权均价=11.14元\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:16Z", "cmd": "browser assert-kpi --label 总采购量 --value 97,000", "exit": 0, "stdout": "OK kpi 总采购量=97,000\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:17Z", "cmd": "browser assert-kpi --label 总金额 --value 1,080,900元", "exit": 0, "stdout": "OK kpi 总金额=1,080,900元\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:17Z", "cmd": "browser assert-kpi --label 首→末期间变化 --value -7.16%", "exit": 0, "stdout": "OK kpi 首→末期间变化=-7.16%\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:18Z", "cmd": "browser assert-kpi --label PPV 采购价差 --value -52,060元", "exit": 0, "stdout": "OK kpi PPV 采购价差=-52,060元\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:18Z", "cmd": "browser assert-text --selector #app --contains 60.14%", "exit": 0, "stdout": "OK assert-text #app\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:18Z", "cmd": "browser assert-order --selector #app table --nth 1 --sequence 深科电子（示例）|沪连精密（示例）|苏恒连接器（示例）", "exit": 0, "stdout": "OK order 深科电子（示例）|沪连精密（示例）|苏恒连接器（示例）\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:19Z", "cmd": "browser assert-absent --text 计算未通过", "exit": 0, "stdout": "OK absent 计算未通过\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:20Z", "cmd": "browser screenshot --name price/03-result.png", "exit": 0, "stdout": "OK screenshot price/03-result.png\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:20Z", "cmd": "browser assert-same-origin --name price/requests.json", "exit": 0, "stdout": "OK same-origin entries=2\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:20Z", "cmd": "browser goto", "exit": 0, "stdout": "OK goto http://127.0.0.1:33283/\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:21Z", "cmd": "browser click --selector button[data-tab=\"score\"]", "exit": 0, "stdout": "OK click button[data-tab=\"score\"]\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:21Z", "cmd": "browser assert-text --selector button.tab.on --equals 供应商评分", "exit": 0, "stdout": "OK assert-text button.tab.on\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:22Z", "cmd": "browser assert-text --selector #app h2 --contains 门槛校验 + 加权评分", "exit": 0, "stdout": "OK assert-text #app h2\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:22Z", "cmd": "browser assert-value --selector [data-spath=\"candidates.0.supplier\"] --equals 供应商 A", "exit": 0, "stdout": "OK assert-value [data-spath=\"candidates.0.supplier\"]=供应商 A\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:23Z", "cmd": "browser assert-count --selector input[data-spath^=\"gates.\"][data-spath$=\".label\"] --equals 1", "exit": 0, "stdout": "OK assert-count input[data-spath^=\"gates.\"][data-spath$=\".label\"]=1\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:23Z", "cmd": "browser click --selector button[data-act=\"run\"]", "exit": 0, "stdout": "OK click button[data-act=\"run\"]\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:24Z", "cmd": "browser assert-absent --text 计算未通过", "exit": 0, "stdout": "OK absent 计算未通过\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:24Z", "cmd": "browser assert-kpi --label 评分第一 --value 供应商 A", "exit": 0, "stdout": "OK kpi 评分第一=供应商 A\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:25Z", "cmd": "browser assert-kpi --label 加权总分 --value —", "exit": 0, "stdout": "OK kpi 加权总分=—\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:25Z", "cmd": "browser assert-text --selector #app --contains 待补证后复评（门槛待核实）", "exit": 0, "stdout": "OK assert-text #app\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:26Z", "cmd": "browser screenshot --name score/01-default-result.png", "exit": 0, "stdout": "OK screenshot score/01-default-result.png\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:26Z", "cmd": "browser click --selector button[data-act=\"example\"]", "exit": 0, "stdout": "OK click button[data-act=\"example\"]\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:26Z", "cmd": "browser assert-count --selector input[data-spath^=\"gates.\"][data-spath$=\".label\"] --equals 3", "exit": 0, "stdout": "OK assert-count input[data-spath^=\"gates.\"][data-spath$=\".label\"]=3\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:27Z", "cmd": "browser assert-value --selector [data-spath=\"candidates.0.supplier\"] --equals 沪连精密（示例）", "exit": 0, "stdout": "OK assert-value [data-spath=\"candidates.0.supplier\"]=沪连精密（示例）\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:27Z", "cmd": "browser assert-value --selector [data-spath=\"candidates.2.supplier\"] --equals 苏恒连接器（示例）", "exit": 0, "stdout": "OK assert-value [data-spath=\"candidates.2.supplier\"]=苏恒连接器（示例）\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:28Z", "cmd": "browser assert-value --selector [data-spath=\"weights.0.weight\"] --equals 30", "exit": 0, "stdout": "OK assert-value [data-spath=\"weights.0.weight\"]=30\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:28Z", "cmd": "browser assert-value --selector [data-spath=\"candidates.0.gates.0\"] --equals pass", "exit": 0, "stdout": "OK assert-value [data-spath=\"candidates.0.gates.0\"]=pass\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:29Z", "cmd": "browser assert-value --selector [data-spath=\"candidates.2.gates.1\"] --equals pending", "exit": 0, "stdout": "OK assert-value [data-spath=\"candidates.2.gates.1\"]=pending\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:29Z", "cmd": "browser assert-value --selector [data-spath=\"candidates.3.gates.2\"] --equals pending", "exit": 0, "stdout": "OK assert-value [data-spath=\"candidates.3.gates.2\"]=pending\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:30Z", "cmd": "browser screenshot --name score/02-example-default-gates.png", "exit": 0, "stdout": "OK screenshot score/02-example-default-gates.png\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:30Z", "cmd": "browser click --selector button[data-act=\"run\"]", "exit": 0, "stdout": "OK click button[data-act=\"run\"]\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:30Z", "cmd": "browser assert-kpi --label 评分第一 --value 沪连精密（示例）", "exit": 0, "stdout": "OK kpi 评分第一=沪连精密（示例）\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:31Z", "cmd": "browser assert-kpi --label 加权总分 --value 0.8500", "exit": 0, "stdout": "OK kpi 加权总分=0.8500\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:31Z", "cmd": "browser assert-kpi --label 权重合计 --value 100.00%", "exit": 0, "stdout": "OK kpi 权重合计=100.00%\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:32Z", "cmd": "browser assert-text --selector #app --contains 待补证后复评（门槛待核实）", "exit": 0, "stdout": "OK assert-text #app\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:32Z", "cmd": "browser assert-absent --text 门槛未通过，淘汰", "exit": 0, "stdout": "OK absent 门槛未通过，淘汰\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:33Z", "cmd": "browser assert-order --selector #app table --nth 0 --sequence 沪连精密（示例）|甬新电气（示例·待补证）|苏恒连接器（示例）|深科电子（示例）", "exit": 0, "stdout": "OK order 沪连精密（示例）|甬新电气（示例·待补证）|苏恒连接器（示例）|深科电子（示例）\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:33Z", "cmd": "browser screenshot --name score/03-truncated-result.png", "exit": 0, "stdout": "OK screenshot score/03-truncated-result.png\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:34Z", "cmd": "browser click --selector button[data-act=\"clear\"]", "exit": 0, "stdout": "OK click button[data-act=\"clear\"]\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:34Z", "cmd": "browser assert-count --selector input[data-spath^=\"gates.\"][data-spath$=\".label\"] --equals 1", "exit": 0, "stdout": "OK assert-count input[data-spath^=\"gates.\"][data-spath$=\".label\"]=1\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:35Z", "cmd": "browser click --selector button[data-sact=\"add-gate\"]", "exit": 0, "stdout": "OK click button[data-sact=\"add-gate\"]\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:35Z", "cmd": "browser click --selector button[data-sact=\"add-gate\"]", "exit": 0, "stdout": "OK click button[data-sact=\"add-gate\"]\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:36Z", "cmd": "browser assert-count --selector input[data-spath^=\"gates.\"][data-spath$=\".label\"] --equals 3", "exit": 0, "stdout": "OK assert-count input[data-spath^=\"gates.\"][data-spath$=\".label\"]=3\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:36Z", "cmd": "browser click --selector button[data-act=\"example\"]", "exit": 0, "stdout": "OK click button[data-act=\"example\"]\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:36Z", "cmd": "browser assert-value --selector [data-spath=\"candidates.2.gates.1\"] --equals fail", "exit": 0, "stdout": "OK assert-value [data-spath=\"candidates.2.gates.1\"]=fail\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:37Z", "cmd": "browser assert-value --selector [data-spath=\"candidates.3.gates.2\"] --equals pending", "exit": 0, "stdout": "OK assert-value [data-spath=\"candidates.3.gates.2\"]=pending\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:37Z", "cmd": "browser screenshot --name score/04-example-three-gates.png", "exit": 0, "stdout": "OK screenshot score/04-example-three-gates.png\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:38Z", "cmd": "browser click --selector button[data-act=\"run\"]", "exit": 0, "stdout": "OK click button[data-act=\"run\"]\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:38Z", "cmd": "browser assert-kpi --label 评分第一 --value 沪连精密（示例）", "exit": 0, "stdout": "OK kpi 评分第一=沪连精密（示例）\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:39Z", "cmd": "browser assert-kpi --label 加权总分 --value 0.7000", "exit": 0, "stdout": "OK kpi 加权总分=0.7000\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:39Z", "cmd": "browser assert-kpi --label 权重合计 --value 100.00%", "exit": 0, "stdout": "OK kpi 权重合计=100.00%\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:40Z", "cmd": "browser assert-text --selector #app --contains 门槛未通过，淘汰", "exit": 0, "stdout": "OK assert-text #app\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:40Z", "cmd": "browser assert-text --selector #app --contains 待补证后复评（门槛待核实）", "exit": 0, "stdout": "OK assert-text #app\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:41Z", "cmd": "browser assert-order --selector #app table --nth 0 --sequence 沪连精密（示例）|甬新电气（示例·待补证）|深科电子（示例）|苏恒连接器（示例）", "exit": 0, "stdout": "OK order 沪连精密（示例）|甬新电气（示例·待补证）|深科电子（示例）|苏恒连接器（示例）\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:41Z", "cmd": "browser assert-absent --text 计算未通过", "exit": 0, "stdout": "OK absent 计算未通过\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:42Z", "cmd": "browser screenshot --name score/05-aligned-result.png", "exit": 0, "stdout": "OK screenshot score/05-aligned-result.png\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:42Z", "cmd": "browser assert-same-origin --name score/requests.json", "exit": 0, "stdout": "OK same-origin entries=2\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:43Z", "cmd": "browser goto", "exit": 0, "stdout": "OK goto http://127.0.0.1:33283/\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:43Z", "cmd": "browser click --selector button[data-tab=\"inventory\"]", "exit": 0, "stdout": "OK click button[data-tab=\"inventory\"]\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:43Z", "cmd": "browser assert-text --selector button.tab.on --equals 库存补货", "exit": 0, "stdout": "OK assert-text button.tab.on\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:44Z", "cmd": "browser assert-text --selector #app h2 --contains 安全库存与补货点", "exit": 0, "stdout": "OK assert-text #app h2\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:44Z", "cmd": "browser assert-text --selector #app .empty --contains 点「载入示例」", "exit": 0, "stdout": "OK assert-text #app .empty\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:45Z", "cmd": "browser click --selector button[data-act=\"run\"]", "exit": 0, "stdout": "OK click button[data-act=\"run\"]\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:45Z", "cmd": "browser assert-text --selector #app .err --contains 缺少必填字段: on_hand", "exit": 0, "stdout": "OK assert-text #app .err\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:46Z", "cmd": "browser screenshot --name inventory/01-blank-error.png", "exit": 0, "stdout": "OK screenshot inventory/01-blank-error.png\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:46Z", "cmd": "browser click --selector button[data-act=\"example\"]", "exit": 0, "stdout": "OK click button[data-act=\"example\"]\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:47Z", "cmd": "browser assert-value --selector [data-path=\"inventory.s.on_hand\"] --equals 8200", "exit": 0, "stdout": "OK assert-value [data-path=\"inventory.s.on_hand\"]=8200\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:47Z", "cmd": "browser assert-value --selector [data-path=\"inventory.s.item\"] --equals 工业连接器 X20（示例物料）", "exit": 0, "stdout": "OK assert-value [data-path=\"inventory.s.item\"]=工业连接器 X20（示例物料）\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:47Z", "cmd": "browser assert-value --selector [data-path=\"inventory.s.warehouse\"] --equals 一号仓", "exit": 0, "stdout": "OK assert-value [data-path=\"inventory.s.warehouse\"]=一号仓\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:48Z", "cmd": "browser screenshot --name inventory/02-example-filled.png", "exit": 0, "stdout": "OK screenshot inventory/02-example-filled.png\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:48Z", "cmd": "browser click --selector button[data-act=\"run\"]", "exit": 0, "stdout": "OK click button[data-act=\"run\"]\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:49Z", "cmd": "browser assert-kpi --label 建议下单量 --value 0", "exit": 0, "stdout": "OK kpi 建议下单量=0\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:49Z", "cmd": "browser assert-kpi --label 再订货点 ROP --value 6,310", "exit": 0, "stdout": "OK kpi 再订货点 ROP=6,310\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:50Z", "cmd": "browser assert-kpi --label 安全库存 --value 1,690", "exit": 0, "stdout": "OK kpi 安全库存=1,690\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:50Z", "cmd": "browser assert-kpi --label 当前库存头寸 --value 9,500", "exit": 0, "stdout": "OK kpi 当前库存头寸=9,500\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:51Z", "cmd": "browser assert-kpi --label 可用库存 --value 7,000", "exit": 0, "stdout": "OK kpi 可用库存=7,000\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:51Z", "cmd": "browser assert-kpi --label 可供天数 --value 28.8天", "exit": 0, "stdout": "OK kpi 可供天数=28.8天\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:51Z", "cmd": "browser assert-absent --text 库存头寸低于再订货点", "exit": 0, "stdout": "OK absent 库存头寸低于再订货点\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:52Z", "cmd": "browser assert-absent --text 计算未通过", "exit": 0, "stdout": "OK absent 计算未通过\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:52Z", "cmd": "browser screenshot --name inventory/03-result.png", "exit": 0, "stdout": "OK screenshot inventory/03-result.png\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:53Z", "cmd": "browser assert-same-origin --name inventory/requests.json", "exit": 0, "stdout": "OK same-origin entries=2\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:53Z", "cmd": "browser goto", "exit": 0, "stdout": "OK goto http://127.0.0.1:33283/\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:54Z", "cmd": "browser click --selector button[data-tab=\"landed\"]", "exit": 0, "stdout": "OK click button[data-tab=\"landed\"]\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:54Z", "cmd": "browser assert-text --selector button.tab.on --equals 进口到岸成本", "exit": 0, "stdout": "OK assert-text button.tab.on\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:55Z", "cmd": "browser assert-text --selector #app h2 --contains 进口 landed cost 测算", "exit": 0, "stdout": "OK assert-text #app h2\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:55Z", "cmd": "browser assert-text --selector #app .empty --contains 点「载入示例」", "exit": 0, "stdout": "OK assert-text #app .empty\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:56Z", "cmd": "browser click --selector button[data-act=\"run\"]", "exit": 0, "stdout": "OK click button[data-act=\"run\"]\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:56Z", "cmd": "browser assert-text --selector #app .err --contains 缺少必填字段: fx_rate", "exit": 0, "stdout": "OK assert-text #app .err\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:57Z", "cmd": "browser screenshot --name landed/01-blank-error.png", "exit": 0, "stdout": "OK screenshot landed/01-blank-error.png\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:57Z", "cmd": "browser click --selector button[data-act=\"example\"]", "exit": 0, "stdout": "OK click button[data-act=\"example\"]\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:57Z", "cmd": "browser assert-value --selector [data-path=\"landed.s.trade_term\"] --equals FOB", "exit": 0, "stdout": "OK assert-value [data-path=\"landed.s.trade_term\"]=FOB\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:58Z", "cmd": "browser assert-value --selector [data-path=\"landed.s.fx_rate\"] --equals 7.12", "exit": 0, "stdout": "OK assert-value [data-path=\"landed.s.fx_rate\"]=7.12\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:58Z", "cmd": "browser assert-value --selector [data-path=\"landed.s.quantity\"] --equals 10000", "exit": 0, "stdout": "OK assert-value [data-path=\"landed.s.quantity\"]=10000\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:59Z", "cmd": "browser assert-value --selector [data-path=\"landed.s.duty_rate\"] --equals 8", "exit": 0, "stdout": "OK assert-value [data-path=\"landed.s.duty_rate\"]=8\n", "stderr": ""}
+{"ts": "2026-11-17T06:32:59Z", "cmd": "browser assert-value --selector [data-path=\"landed.s.vat_rate\"] --equals 13", "exit": 0, "stdout": "OK assert-value [data-path=\"landed.s.vat_rate\"]=13\n", "stderr": ""}
+{"ts": "2026-11-17T06:33:00Z", "cmd": "browser screenshot --name landed/02-example-filled.png", "exit": 0, "stdout": "OK screenshot landed/02-example-filled.png\n", "stderr": ""}
+{"ts": "2026-11-17T06:33:00Z", "cmd": "browser click --selector button[data-act=\"run\"]", "exit": 0, "stdout": "OK click button[data-act=\"run\"]\n", "stderr": ""}
+{"ts": "2026-11-17T06:33:01Z", "cmd": "browser assert-kpi --label 到岸总成本 --value 408,626元", "exit": 0, "stdout": "OK kpi 到岸总成本=408,626元\n", "stderr": ""}
+{"ts": "2026-11-17T06:33:01Z", "cmd": "browser assert-kpi --label 单位到岸成本 --value 40.86元", "exit": 0, "stdout": "OK kpi 单位到岸成本=40.86元\n", "stderr": ""}
+{"ts": "2026-11-17T06:33:01Z", "cmd": "browser assert-kpi --label 完税价格 --value 375,580元", "exit": 0, "stdout": "OK kpi 完税价格=375,580元\n", "stderr": ""}
+{"ts": "2026-11-17T06:33:02Z", "cmd": "browser assert-kpi --label 关税 --value 30,046元", "exit": 0, "stdout": "OK kpi 关税=30,046元\n", "stderr": ""}
+{"ts": "2026-11-17T06:33:02Z", "cmd": "browser assert-kpi --label 增值税 --value 52,731元", "exit": 0, "stdout": "OK kpi 增值税=52,731元\n", "stderr": ""}
+{"ts": "2026-11-17T06:33:03Z", "cmd": "browser assert-kpi --label 综合税负率 --value 8.00%", "exit": 0, "stdout": "OK kpi 综合税负率=8.00%\n", "stderr": ""}
+{"ts": "2026-11-17T06:33:03Z", "cmd": "browser assert-text --selector #app --contains 可抵扣：不进成本，单列垫付资金", "exit": 0, "stdout": "OK assert-text #app\n", "stderr": ""}
+{"ts": "2026-11-17T06:33:04Z", "cmd": "browser assert-text --selector #app --contains 贸易术语 FOB", "exit": 0, "stdout": "OK assert-text #app\n", "stderr": ""}
+{"ts": "2026-11-17T06:33:04Z", "cmd": "browser assert-absent --text 计算未通过", "exit": 0, "stdout": "OK absent 计算未通过\n", "stderr": ""}
+{"ts": "2026-11-17T06:33:04Z", "cmd": "browser screenshot --name landed/03-result.png", "exit": 0, "stdout": "OK screenshot landed/03-result.png\n", "stderr": ""}
+{"ts": "2026-11-17T06:33:05Z", "cmd": "browser assert-same-origin --name landed/requests.json", "exit": 0, "stdout": "OK same-origin entries=2\n", "stderr": ""}
+{"ts": "2026-11-17T06:33:05Z", "cmd": "browser stop", "exit": 0, "stdout": "OK browser stopped pid=7144\n", "stderr": ""}
+{"ts": "2026-11-17T06:33:06Z", "cmd": "cleanup", "exit": 0, "notes": ["server 6784 stopped"]}
+{"ts": "2026-11-17T06:34:01Z", "cmd": "doctor", "exit": 1, "problems": ["no live state"]}
